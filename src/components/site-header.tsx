@@ -1,49 +1,83 @@
-import Link from "next/link";
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 const navigation = [
-  { href: "/discovery-lab", label: "Discovery Lab" },
-  { href: "/explore", label: "Explore" },
+  { href: "/", label: "Discover" },
+  { href: "/explore", label: "Search" },
   { href: "/compare", label: "Compare" },
-];
+  { href: "/discovery-lab", label: "Lab" },
+]
 
 export function SiteHeader() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-[color:var(--border-subtle)] bg-[color:rgb(248_244_236_/_0.88)] backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-4 md:flex-row md:items-center md:justify-between">
-        <Link href="/" className="group flex items-center gap-4">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[color:var(--border-strong)] bg-[var(--ink-strong)] text-sm font-bold uppercase tracking-[0.24em] text-[var(--paper)]">
-            US
-          </div>
-          <div>
-            <p className="font-display text-2xl leading-none text-[var(--ink-strong)]">
-              USA Goals
-            </p>
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-[var(--ink-muted)]">
-              Strategy Intelligence Prototype
-            </p>
-          </div>
-        </Link>
+  const pathname = usePathname()
 
-        <nav className="flex flex-wrap items-center gap-3 sm:gap-5">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-semibold text-[var(--ink-soft)] transition hover:text-[var(--accent)]"
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+      <div className="bg-primary text-primary-foreground">
+        <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-1 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.16em] sm:flex-row sm:items-center sm:justify-between">
+          <span>Prototype experience</span>
+          <span className="text-primary-foreground/70">
+            Built from public federal strategy data. Not an official government
+            website.
+          </span>
+        </div>
+      </div>
+
+      <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
+        <div className="flex min-w-0 items-center gap-4">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
+            <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-card text-sm font-semibold">
+              US
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-foreground">
+                USA Goals
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                Federal strategy catalog
+              </p>
+            </div>
+          </Link>
+
+          <nav className="hidden items-center gap-1 lg:flex">
+            {navigation.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname === item.href || pathname.startsWith(`${item.href}/`)
+
+              return (
+                <Button
+                  key={item.href}
+                  asChild
+                  variant={isActive ? "secondary" : "ghost"}
+                  size="sm"
+                  className={cn("rounded-full", isActive && "shadow-none")}
+                >
+                  <Link href={item.href}>{item.label}</Link>
+                </Button>
+              )
+            })}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="rounded-full">
+            <a
+              href="https://apex.app.cloud.gov/api/openapi.json"
+              target="_blank"
+              rel="noreferrer"
             >
-              {item.label}
-            </Link>
-          ))}
-          <a
-            href="https://apex.app.cloud.gov/api/openapi.json"
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full border border-[color:var(--border-strong)] px-4 py-2 text-sm font-semibold text-[var(--ink-strong)] transition hover:border-[color:var(--accent)] hover:text-[var(--accent)]"
-          >
-            OpenAPI
-          </a>
-        </nav>
+              API Docs
+            </a>
+          </Button>
+        </div>
       </div>
     </header>
-  );
+  )
 }

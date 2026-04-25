@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Manrope, Newsreader } from "next/font/google";
+import { Geist, IBM_Plex_Mono, Manrope, Newsreader } from "next/font/google";
 import "./globals.css";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 const bodyFont = Manrope({
   variable: "--font-body",
@@ -37,15 +42,22 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable} h-full antialiased`}
+      className={cn(
+        "h-full",
+        "font-sans",
+        "antialiased",
+        bodyFont.variable,
+        displayFont.variable,
+        monoFont.variable,
+        geist.variable,
+      )}
     >
       <body className="min-h-full">
         <div className="relative flex min-h-screen flex-col">
           <SiteHeader />
-          <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 py-10">
+          <main className="mx-auto flex w-full max-w-screen-2xl flex-1 flex-col px-4 py-6 sm:px-6">
             {children}
           </main>
-          <SiteFooter />
         </div>
       </body>
     </html>
