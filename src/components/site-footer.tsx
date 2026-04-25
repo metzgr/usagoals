@@ -10,11 +10,14 @@ export function SiteFooter() {
             Federal strategy, mapped as a living graph.
           </p>
           <p className="text-sm leading-7 text-[var(--ink-soft)]">
-            Prototype built on the live APEX corpus, with a Qdrant-ready vector layer
-            and a clear path to cloud.gov deployment.
+            Prototype built on the live APEX corpus, with a simulated semantic layer
+            today and a Qdrant-backed vector layer next.
           </p>
         </div>
         <div className="flex flex-wrap gap-4 text-sm font-semibold text-[var(--ink-soft)]">
+          <Link href="/discovery-lab" className="transition hover:text-[var(--accent)]">
+            Discovery Lab
+          </Link>
           <Link href="/explore" className="transition hover:text-[var(--accent)]">
             Explore
           </Link>

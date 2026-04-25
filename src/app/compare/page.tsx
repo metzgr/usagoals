@@ -89,52 +89,63 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
       <section className="space-y-6">
         <div className="card-surface overflow-hidden">
-          <div className="grid grid-cols-[minmax(0,2fr)_repeat(4,minmax(120px,1fr))] gap-4 border-b border-[color:var(--border-subtle)] bg-[var(--paper)] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-muted)]">
-            <span>Measure</span>
-            <span>Agency</span>
-            <span>Baseline</span>
-            <span>Target</span>
-            <span>Actual / Trend</span>
-          </div>
-          <div className="divide-y divide-[color:var(--border-subtle)]">
-            {rows.length > 0 ? (
-              rows.map((row, index) => (
-                <div
-                  key={`${row.measure_name}-${row.agency_name}-${index}`}
-                  className="grid grid-cols-[minmax(0,2fr)_repeat(4,minmax(120px,1fr))] gap-4 px-5 py-4 text-sm text-[var(--ink-soft)]"
-                >
-                  <div className="font-semibold text-[var(--ink-strong)]">
-                    {row.measure_name}
-                  </div>
-                  <div className="inline-flex items-center gap-2">
-                    <Building2 className="h-4 w-4 text-[var(--ink-muted)]" />
-                    {row.agency_name}
-                  </div>
-                  <div>{formatValue(row.baseline_value)}</div>
-                  <div>{formatValue(row.target_value)}</div>
-                  <div>
-                    <span className="block">{formatValue(row.actual_value)}</span>
-                    <span className="text-xs uppercase tracking-[0.15em] text-[var(--accent)]">
-                      {row.trend ?? "No trend"}
-                    </span>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="px-5 py-10 text-sm leading-7 text-[var(--ink-soft)]">
-                No comparison rows were returned for this selection. The underlying API is still sparse for some agencies and measures.
+          <div className="overflow-x-auto">
+            <div className="min-w-[760px]">
+              <div className="grid grid-cols-[minmax(0,2fr)_repeat(4,minmax(120px,1fr))] gap-4 border-b border-[color:var(--border-subtle)] bg-[var(--paper)] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-muted)]">
+                <span>Measure</span>
+                <span>Agency</span>
+                <span>Baseline</span>
+                <span>Target</span>
+                <span>Actual / Trend</span>
               </div>
-            )}
+              <div className="divide-y divide-[color:var(--border-subtle)]">
+                {rows.length > 0 ? (
+                  rows.map((row, index) => (
+                    <div
+                      key={`${row.measure_name}-${row.agency_name}-${index}`}
+                      className="grid grid-cols-[minmax(0,2fr)_repeat(4,minmax(120px,1fr))] gap-4 px-5 py-4 text-sm text-[var(--ink-soft)]"
+                    >
+                      <div className="font-semibold text-[var(--ink-strong)]">
+                        {row.measure_name}
+                      </div>
+                      <div className="inline-flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-[var(--ink-muted)]" />
+                        {row.agency_name}
+                      </div>
+                      <div>{formatValue(row.baseline_value)}</div>
+                      <div>{formatValue(row.target_value)}</div>
+                      <div>
+                        <span className="block">{formatValue(row.actual_value)}</span>
+                        <span className="text-xs uppercase tracking-[0.15em] text-[var(--accent)]">
+                          {row.trend ?? "No trend"}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-5 py-10 text-sm leading-7 text-[var(--ink-soft)]">
+                    No comparison rows were returned for this selection. The underlying
+                    API is still sparse for some agencies and measures.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        <p className="text-sm leading-7 text-[var(--ink-soft)]">
-          Need a different entry point? Head back to{" "}
-          <Link href="/explore" className="font-semibold text-[var(--accent)]">
-            Explore
-          </Link>{" "}
-          to move from topics into agencies and goals before comparing.
-        </p>
+        <div className="card-surface flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
+            Need a more narrative entry point first? Start in{" "}
+            <Link href="/discovery-lab" className="font-semibold text-[var(--accent)]">
+              Discovery Lab
+            </Link>{" "}
+            or go back to{" "}
+            <Link href="/explore" className="font-semibold text-[var(--accent)]">
+              Explore
+            </Link>{" "}
+            to move from issues into agencies and goals before comparing.
+          </p>
+        </div>
       </section>
     </div>
   );

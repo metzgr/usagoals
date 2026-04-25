@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, BrainCircuit } from "lucide-react";
 
 import { GoalCard } from "@/components/goal-card";
 import { SearchResultCard } from "@/components/search-result-card";
 import { SectionHeading } from "@/components/section-heading";
 import { ThemeCard } from "@/components/theme-card";
 import { listAgencies, listGoals, listThemes, searchCorpus } from "@/lib/apex";
+import { getDiscoverySignals } from "@/lib/discovery";
 
 export const metadata: Metadata = {
   title: "Explore",
@@ -25,6 +28,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const query = params.q?.trim() ?? "";
   const agencyId = params.agency_id ? Number(params.agency_id) : undefined;
   const nodeType = params.node_type?.trim() || undefined;
+  const discoverySignals = getDiscoverySignals().slice(0, 4);
+  const promptPresets = ["workforce", "technology", "trade", "science", "innovation"];
 
   const [agencies, fallbackGoals, themes, searchResults] = await Promise.all([
     listAgencies(),
@@ -51,6 +56,36 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <span className="rounded-full bg-[var(--paper)] px-4 py-2 font-semibold text-[var(--ink-strong)]">
               Vector layer reserved for Phase 2
             </span>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-[1.6rem] border border-[color:var(--border-subtle)] bg-white/75 px-5 py-5">
+              <p className="eyebrow">Quick prompts</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {promptPresets.map((preset) => (
+                  <Link
+                    key={preset}
+                    href={`/explore?q=${encodeURIComponent(preset)}`}
+                    className="rounded-full bg-[var(--mist)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ink-strong)] transition hover:bg-[var(--paper)]"
+                  >
+                    {preset}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-[1.6rem] border border-[color:var(--border-subtle)] bg-white/75 px-5 py-5">
+              <p className="eyebrow">Issue routes</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {discoverySignals.map((signal) => (
+                  <Link
+                    key={signal.id}
+                    href={`/discovery-lab?signal=${signal.id}`}
+                    className="rounded-full bg-[var(--paper)] px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)] transition hover:bg-[var(--mist)]"
+                  >
+                    {signal.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -103,6 +138,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
           <button type="submit" className="button-primary w-full justify-center">
             Search corpus
           </button>
+          <div className="rounded-3xl bg-[var(--paper)] px-4 py-4 text-sm leading-7 text-[var(--ink-soft)]">
+            Want the future version of this workflow? Use{" "}
+            <Link href="/discovery-lab" className="font-semibold text-[var(--accent)]">
+              Discovery Lab
+            </Link>{" "}
+            to preview adjacent-goal and issue-cluster navigation.
+          </div>
         </form>
       </section>
 
@@ -119,6 +161,19 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               These results are lexical matches from the live API. Phase 2 will layer
               semantic recommendations and related-goal retrieval on top of this.
             </p>
+          </div>
+          <div className="card-surface flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <BrainCircuit className="mt-1 h-5 w-5 text-[var(--accent)]" />
+              <p className="max-w-2xl text-sm leading-7 text-[var(--ink-soft)]">
+                If this query is directionally right but incomplete, the future vector
+                layer should expand it into adjacent goals and nearby themes.
+              </p>
+            </div>
+            <Link href={`/discovery-lab?signal=${encodeURIComponent(query.toLowerCase())}`} className="button-secondary">
+              Try semantic preview
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
           <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
             {searchResults.results.map((result) => (

@@ -7,14 +7,17 @@ import {
   FileSearch,
   Link2,
   Network,
+  Sparkles,
 } from "lucide-react";
 
+import { DiscoveryMatchCard } from "@/components/discovery-match-card";
 import {
   getDocument,
   getGoal,
   getGoalNeighbors,
   type GoalMeasure,
 } from "@/lib/apex";
+import { getGoalSemanticPreview } from "@/lib/discovery";
 import { formatTagLabel, formatValue } from "@/lib/utils";
 
 type GoalPageProps = {
@@ -32,15 +35,17 @@ async function getGoalPageData(goalId: string) {
 
   try {
     const goal = await getGoal(parsedGoalId);
-    const [document, neighbors] = await Promise.all([
+    const [document, neighbors, semanticPreview] = await Promise.all([
       getDocument(goal.document_id),
       getGoalNeighbors(parsedGoalId),
+      getGoalSemanticPreview(parsedGoalId),
     ]);
 
     return {
       goal,
       document,
       neighbors,
+      semanticPreview,
     };
   } catch {
     notFound();
@@ -66,7 +71,9 @@ function flattenMeasures(measures: GoalMeasure[]) {
 }
 
 export default async function GoalPage({ params }: GoalPageProps) {
-  const { goal, document, neighbors } = await getGoalPageData((await params).goalId);
+  const { goal, document, neighbors, semanticPreview } = await getGoalPageData(
+    (await params).goalId,
+  );
   const tags = goal.tags
     ? goal.tags
         .split(",")
@@ -254,6 +261,36 @@ export default async function GoalPage({ params }: GoalPageProps) {
               ) : (
                 <div className="rounded-3xl border border-dashed border-[color:var(--border-subtle)] px-4 py-4">
                   No shared-priority edges are currently available for this goal.
+                </div>
+              )}
+            </div>
+          </article>
+
+          <article className="card-surface space-y-4 p-6">
+            <div className="flex items-center gap-3">
+              <Sparkles className="h-5 w-5 text-[var(--accent)]" />
+              <h2 className="text-lg font-semibold text-[var(--ink-strong)]">
+                Semantic preview
+              </h2>
+            </div>
+            <p className="text-sm leading-7 text-[var(--ink-soft)]">
+              This simulates the future “related goals” experience with heuristic ranking
+              until vector search is online.
+            </p>
+            <div className="space-y-4">
+              {semanticPreview.length > 0 ? (
+                semanticPreview.map((match) => (
+                  <DiscoveryMatchCard
+                    key={match.goal.id}
+                    match={match}
+                    eyebrow="Simulated match"
+                    compact
+                  />
+                ))
+              ) : (
+                <div className="rounded-3xl border border-dashed border-[color:var(--border-subtle)] px-4 py-4 text-sm leading-7 text-[var(--ink-soft)]">
+                  There is not enough adjacent signal in the current corpus to simulate a
+                  strong semantic recommendation yet.
                 </div>
               )}
             </div>

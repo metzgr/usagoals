@@ -1,12 +1,14 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BrainCircuit,
   Database,
   FileText,
   Network,
   Orbit,
   Radar,
   Sparkles,
+  Waypoints,
 } from "lucide-react";
 
 import { GoalCard } from "@/components/goal-card";
@@ -14,6 +16,7 @@ import { MetricCard } from "@/components/metric-card";
 import { SectionHeading } from "@/components/section-heading";
 import { ThemeCard } from "@/components/theme-card";
 import { getOverview } from "@/lib/apex";
+import { getDiscoverySignals } from "@/lib/discovery";
 import { getVectorLayerStatus } from "@/lib/qdrant";
 import { formatCompactCount, formatCount } from "@/lib/utils";
 
@@ -30,6 +33,7 @@ export default async function Home() {
   const featuredAgencies = [...overview.agencies]
     .sort((left, right) => right.goal_count - left.goal_count)
     .slice(0, 6);
+  const discoverySignals = getDiscoverySignals().slice(0, 4);
 
   return (
     <div className="space-y-16 pb-16">
@@ -49,25 +53,37 @@ export default async function Home() {
             <div className="space-y-5">
               <p className="eyebrow">USA Goals</p>
               <h1 className="max-w-5xl font-display text-5xl leading-[0.92] tracking-tight text-[var(--ink-strong)] sm:text-6xl lg:text-7xl">
-                The federal strategy graph, built for discovery before the full
-                Performance.gov future exists.
+                Federal strategy intelligence, designed to feel bigger than the current
+                data already does.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-[var(--ink-soft)]">
-                USA Goals turns the current APEX API into an investor-ready product:
-                cross-agency strategy exploration, source-linked evidence, and a clear
-                path toward semantic retrieval, network analysis, and stakeholder-facing
-                workflows.
+                USA Goals turns the current APEX API into an investor-ready prototype:
+                issue discovery, cross-agency strategy mapping, source-linked evidence,
+                and a simulated semantic layer that shows exactly where Qdrant will take
+                the product next.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <Link href="/explore" className="button-primary">
-                Explore the corpus
+              <Link href="/discovery-lab" className="button-primary">
+                Open discovery lab
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/compare" className="button-secondary">
-                Compare agencies
+              <Link href="/explore" className="button-secondary">
+                Explore the corpus
               </Link>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              {discoverySignals.map((signal) => (
+                <Link
+                  key={signal.id}
+                  href={`/discovery-lab?signal=${signal.id}`}
+                  className="rounded-full border border-[color:var(--border-subtle)] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-strong)] transition hover:border-[color:var(--accent)] hover:text-[var(--accent)]"
+                >
+                  {signal.label}
+                </Link>
+              ))}
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
@@ -96,7 +112,7 @@ export default async function Home() {
             <div className="flex items-center gap-3">
               <Sparkles className="h-5 w-5 text-[var(--accent)]" />
               <h2 className="text-lg font-semibold text-[var(--ink-strong)]">
-                Prototype stack
+                Product modes
               </h2>
             </div>
             <dl className="space-y-4 text-sm text-[var(--ink-soft)]">
@@ -130,8 +146,8 @@ export default async function Home() {
               </div>
             </dl>
             <p className="rounded-3xl bg-[var(--paper)] px-4 py-4 text-sm leading-7 text-[var(--ink-soft)]">
-              Phase 1 uses live lexical and structured retrieval from APEX. Phase 2 will
-              add semantic recommendations and similarity search through Qdrant.
+              The prototype now has two stories: live structured exploration from APEX,
+              and a simulated semantic discovery experience that previews Phase 2.
             </p>
           </aside>
         </div>
@@ -162,6 +178,66 @@ export default async function Home() {
           detail="Typed graph links spanning hierarchy, themes, and shared priorities."
           icon={<Network className="h-4 w-4" />}
         />
+      </section>
+
+      <section className="space-y-6">
+        <SectionHeading
+          eyebrow="Demo tracks"
+          title="Three experiences that make the product opportunity obvious."
+          description="These routes are designed to help you tell a stronger story in stakeholder conversations: start broad, move into evidence, then compare agency strategy footprints."
+        />
+        <div className="grid gap-5 lg:grid-cols-3">
+          <Link
+            href="/discovery-lab"
+            className="card-surface flex h-full flex-col gap-5 p-6 transition hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="eyebrow">01</p>
+              <BrainCircuit className="h-5 w-5 text-[var(--accent)]" />
+            </div>
+            <h2 className="text-2xl font-semibold text-[var(--ink-strong)]">
+              Discovery Lab
+            </h2>
+            <p className="text-sm leading-7 text-[var(--ink-soft)]">
+              Simulate future semantic retrieval with live issue clusters, adjacent
+              goal matches, and agency bridge views.
+            </p>
+          </Link>
+
+          <Link
+            href={featuredGoals[0] ? `/goals/${featuredGoals[0].id}` : "/explore"}
+            className="card-surface flex h-full flex-col gap-5 p-6 transition hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="eyebrow">02</p>
+              <FileText className="h-5 w-5 text-[var(--accent)]" />
+            </div>
+            <h2 className="text-2xl font-semibold text-[var(--ink-strong)]">
+              Source-linked evidence
+            </h2>
+            <p className="text-sm leading-7 text-[var(--ink-soft)]">
+              Open a goal and show that every promising story can be grounded in plan
+              language, citations, and PDF evidence.
+            </p>
+          </Link>
+
+          <Link
+            href="/compare"
+            className="card-surface flex h-full flex-col gap-5 p-6 transition hover:-translate-y-1"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <p className="eyebrow">03</p>
+              <Waypoints className="h-5 w-5 text-[var(--accent)]" />
+            </div>
+            <h2 className="text-2xl font-semibold text-[var(--ink-strong)]">
+              Agency compare
+            </h2>
+            <p className="text-sm leading-7 text-[var(--ink-soft)]">
+              Line up current measure rows to show how this can become a stronger
+              oversight and benchmarking product over time.
+            </p>
+          </Link>
+        </div>
       </section>
 
       <section className="space-y-6">

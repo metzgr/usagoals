@@ -115,8 +115,8 @@ export default async function ThemePage({ params }: ThemePageProps) {
             vector similarity, turning a theme page into a richer issue-graph explorer.
           </p>
         </div>
-        <Link href="/explore" className="button-secondary">
-          Return to explore
+        <Link href={`/discovery-lab?signal=${theme.theme}`} className="button-secondary">
+          Open discovery lab
         </Link>
       </section>
     </div>
