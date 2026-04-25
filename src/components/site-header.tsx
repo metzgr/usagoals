@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -31,8 +32,15 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-screen-2xl items-center justify-between gap-4 px-4 py-4">
         <div className="flex min-w-0 items-center gap-4">
           <Link href="/" className="flex min-w-0 items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl border border-border bg-card text-sm font-semibold">
-              US
+            <div className="flex h-10 items-center rounded-xl border border-border bg-card px-3">
+              <Image
+                src="/usagoals-logo.svg"
+                alt="USA Goals logo"
+                width={64}
+                height={32}
+                priority
+                className="h-5 w-auto"
+              />
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">
