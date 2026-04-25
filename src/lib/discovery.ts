@@ -428,7 +428,10 @@ export const getDiscoveryScenario = cache(async (signalId?: string) => {
 
     const existing = accumulator.get(agencyId) ?? {
       agencyId,
-      agencyName: goal.agency_name ?? "Unknown agency",
+      agencyName:
+        goal.agency_name ??
+        agencyMap.get(agencyId)?.name ??
+        "Unknown agency",
       agencyAbbreviation:
         goal.agency_abbreviation ??
         agencyMap.get(agencyId)?.abbreviation ??
