@@ -436,7 +436,7 @@ function GoalMarquee({
             src={item.src}
             alt=""
             fill
-            sizes="64px"
+            sizes="144px"
             className="object-contain"
           />
         </span>
