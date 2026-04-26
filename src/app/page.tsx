@@ -1,6 +1,10 @@
+import { readdir, stat } from "node:fs/promises";
+import path from "node:path";
+
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { getOverview } from "@/lib/apex";
@@ -11,6 +15,24 @@ import {
   type CatalogState,
 } from "@/lib/catalog";
 import { formatCount } from "@/lib/utils";
+
+const artworkExtensions = new Set([
+  ".avif",
+  ".gif",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".svg",
+  ".webp",
+]);
+
+const agencySealMarqueeItems = [
+  { id: "nasa", src: "/seals/nasa.svg" },
+  { id: "epa", src: "/seals/epa.svg" },
+  { id: "dhs", src: "/seals/dhs.svg" },
+  { id: "doi", src: "/seals/doi.svg" },
+  { id: "hhs", src: "/seals/hhs.svg" },
+];
 
 export const metadata: Metadata = {
   title: "Discovery",
@@ -26,9 +48,11 @@ type HomePageProps = {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
-  const overview = await getOverview();
+  const [overview, goalArtwork] = await Promise.all([
+    getOverview(),
+    getGoalArtwork(),
+  ]);
   const model = getCatalogModel(overview, params);
-  const featuredOwners = model.owners.slice(0, 12);
   const scopeLabel = model.activeOwner?.abbreviation ?? "All owners";
 
   return (
@@ -44,16 +68,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <div className="w-full max-w-[1440px]">
             <div className="flex justify-center px-9 pb-[10vw] pt-[6vw] max-[800px]:px-0">
               <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">
-                <h1 className="max-w-[1080px] text-[96px] font-medium leading-none max-[768px]:text-[42px]">
-                  The only{" "}
-                  <span className="font-serif italic">
-                    public
-                  </span>
-                  <AgencyMarquee owners={featuredOwners} />
-                  goal book you&apos;ll ever need.{" "}
-                  <span className="text-white/45">
-                    Explore federal outcomes in one place.
-                  </span>
+                <h1 className="max-w-[1080px] font-serif text-[80px] font-medium leading-none max-[768px]:text-[42px]">
+                  Track the
+                  <AgencyMarquee />
+                  <span>Administration’s</span>
+                  <br />
+                  goals for the Nation
+                  <GoalMarquee artwork={goalArtwork} />
                 </h1>
 
                 <p className="max-w-[640px] text-[18px] leading-7 text-[#a8afb7] max-[440px]:w-full">
@@ -365,24 +386,90 @@ function OwnerControls({
   );
 }
 
-function AgencyMarquee({
-  owners,
-}: {
-  owners: Array<{ id: string; abbreviation: string }>;
-}) {
-  const marks = [...owners, ...owners].slice(0, 24);
+function AgencyMarquee() {
+  const marks = [...agencySealMarqueeItems, ...agencySealMarqueeItems].slice(0, 10);
 
   return (
-    <span className="mx-2 inline-flex h-[74px] w-[200px] translate-y-[-14px] items-center overflow-hidden rounded-full bg-white align-middle text-[#18181b] max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-4px]">
-      <span className="flex min-w-max animate-[discovery-marquee_22s_linear_infinite] items-center gap-5 px-5">
-        {marks.map((owner, index) => (
-          <span
-            key={`${owner.id}-${index}`}
-            className="text-sm font-semibold max-[768px]:text-[10px]"
-          >
-            {owner.abbreviation}
-          </span>
-        ))}
+    <InlineHeroMarquee
+      backgroundClassName="bg-[#EDE7DD]"
+      direction="reverse"
+      itemGap="gap-3"
+    >
+      {marks.map((item, index) => (
+        <span
+          key={`${item.id}-${index}`}
+          className="relative flex h-8 w-10 shrink-0 items-center justify-center max-[768px]:h-5 max-[768px]:w-7"
+        >
+          <Image
+            src={item.src}
+            alt=""
+            fill
+            sizes="56px"
+            className="object-contain"
+            unoptimized
+          />
+        </span>
+      ))}
+    </InlineHeroMarquee>
+  );
+}
+
+function GoalMarquee({
+  artwork,
+}: {
+  artwork: Array<{ alt: string; id: string; src: string }>;
+}) {
+  const marks = [...artwork, ...artwork].slice(0, 24);
+
+  return (
+    <InlineHeroMarquee
+      backgroundClassName="bg-[#EDE7DD]"
+      direction="reverse"
+      itemGap="gap-3"
+    >
+      {marks.map((item, index) => (
+        <span
+          key={`${item.id}-${index}`}
+          className="relative flex h-14 w-[72px] shrink-0 items-center justify-center max-[768px]:h-7 max-[768px]:w-11"
+        >
+          <Image
+            src={item.src}
+            alt=""
+            fill
+            sizes="64px"
+            className="object-contain"
+          />
+        </span>
+      ))}
+    </InlineHeroMarquee>
+  );
+}
+
+function InlineHeroMarquee({
+  backgroundClassName = "bg-white",
+  children,
+  direction = "normal",
+  itemGap = "gap-5",
+}: {
+  backgroundClassName?: "bg-[#EDE7DD]" | "bg-white";
+  children: ReactNode;
+  direction?: "normal" | "reverse";
+  itemGap?: "gap-3" | "gap-5";
+}) {
+  const animationClass =
+    direction === "reverse"
+      ? "animate-[discovery-marquee-reverse_22s_linear_infinite]"
+      : "animate-[discovery-marquee_22s_linear_infinite]";
+
+  return (
+    <span
+      aria-hidden="true"
+      className={`mx-2 inline-flex h-[74px] w-[200px] translate-y-[-14px] items-center overflow-hidden rounded-full ${backgroundClassName} align-middle text-[#18181b] max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-4px]`}
+      >
+      <span
+        className={`flex min-w-max ${animationClass} items-center ${itemGap} px-5`}
+      >
+        {children}
       </span>
     </span>
   );
@@ -403,4 +490,41 @@ function MetricPill({ label, value }: { label: string; value: number }) {
 
 function toDiscoveryHref(href: string) {
   return href === "/" ? "/#discovery" : `${href}#discovery`;
+}
+
+async function getGoalArtwork() {
+  const artworkDirectory = path.join(process.cwd(), "public", "artwork");
+
+  try {
+    const entries = await readdir(artworkDirectory, { withFileTypes: true });
+
+    const artworkEntries = entries
+      .filter((entry) => {
+        const extension = path.extname(entry.name).toLowerCase();
+        return entry.isFile() && artworkExtensions.has(extension);
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    return Promise.all(
+      artworkEntries.map(async (entry) => {
+        const fileStats = await stat(path.join(artworkDirectory, entry.name));
+        const version = Math.floor(fileStats.mtimeMs);
+
+        return {
+          id: entry.name,
+          src: `/artwork/${encodeURIComponent(entry.name)}?v=${version}`,
+          alt: getArtworkAlt(entry.name),
+        };
+      }),
+    );
+  } catch {
+    return [];
+  }
+}
+
+function getArtworkAlt(fileName: string) {
+  return path
+    .basename(fileName, path.extname(fileName))
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }

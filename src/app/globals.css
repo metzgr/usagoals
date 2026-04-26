@@ -89,3 +89,13 @@
     transform: translateX(-50%);
   }
 }
+
+@keyframes discovery-marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
