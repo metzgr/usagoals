@@ -421,18 +421,18 @@ function GoalMarquee({
     <InlineHeroMarquee
       backgroundClassName="bg-[#EDE7DD]"
       direction="reverse"
-      itemGap="gap-3"
+      itemGap="gap-4"
     >
       {artwork.map((item) => (
         <span
           key={item.id}
-          className={`relative flex h-16 w-20 shrink-0 items-center justify-center max-[768px]:h-6 max-[768px]:w-10 ${item.id === "usa.png" ? "ml-2" : ""}`}
+          className={`relative flex h-[46px] w-[54px] shrink-0 items-center justify-center max-[768px]:h-[34px] max-[768px]:w-[42px] ${item.id === "usa.png" ? "ml-2" : ""}`}
         >
           <Image
             src={item.src}
             alt=""
             fill
-            sizes="176px"
+            sizes="320px"
             className="object-contain"
           />
         </span>
