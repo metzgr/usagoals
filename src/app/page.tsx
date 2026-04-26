@@ -387,18 +387,16 @@ function OwnerControls({
 }
 
 function AgencyMarquee() {
-  const marks = [...agencySealMarqueeItems, ...agencySealMarqueeItems].slice(0, 10);
-
   return (
     <InlineHeroMarquee
       backgroundClassName="bg-[#EDE7DD]"
       direction="reverse"
-      itemGap="gap-3"
+      itemGap="gap-4"
     >
-      {marks.map((item, index) => (
+      {agencySealMarqueeItems.map((item) => (
         <span
-          key={`${item.id}-${index}`}
-          className="relative flex h-8 w-10 shrink-0 items-center justify-center max-[768px]:h-5 max-[768px]:w-7"
+          key={item.id}
+          className="relative flex h-10 w-12 shrink-0 items-center justify-center max-[768px]:h-7 max-[768px]:w-9"
         >
           <Image
             src={item.src}
@@ -419,24 +417,22 @@ function GoalMarquee({
 }: {
   artwork: Array<{ alt: string; id: string; src: string }>;
 }) {
-  const marks = [...artwork, ...artwork].slice(0, 24);
-
   return (
     <InlineHeroMarquee
       backgroundClassName="bg-[#EDE7DD]"
       direction="reverse"
       itemGap="gap-3"
     >
-      {marks.map((item, index) => (
+      {artwork.map((item) => (
         <span
-          key={`${item.id}-${index}`}
-          className="relative flex h-14 w-[72px] shrink-0 items-center justify-center max-[768px]:h-7 max-[768px]:w-11"
+          key={item.id}
+          className={`relative flex h-16 w-20 shrink-0 items-center justify-center max-[768px]:h-6 max-[768px]:w-10 ${item.id === "usa.png" ? "ml-2" : ""}`}
         >
           <Image
             src={item.src}
             alt=""
             fill
-            sizes="144px"
+            sizes="176px"
             className="object-contain"
           />
         </span>
@@ -454,22 +450,29 @@ function InlineHeroMarquee({
   backgroundClassName?: "bg-[#EDE7DD]" | "bg-white";
   children: ReactNode;
   direction?: "normal" | "reverse";
-  itemGap?: "gap-3" | "gap-5";
+  itemGap?: "gap-3" | "gap-4" | "gap-5";
 }) {
   const animationClass =
     direction === "reverse"
       ? "animate-[discovery-marquee-reverse_22s_linear_infinite]"
       : "animate-[discovery-marquee_22s_linear_infinite]";
+  const trailingGapClass =
+    itemGap === "gap-3" ? "pr-3" : itemGap === "gap-4" ? "pr-4" : "pr-5";
 
   return (
     <span
       aria-hidden="true"
-      className={`mx-2 inline-flex h-[74px] w-[200px] translate-y-[-14px] items-center overflow-hidden rounded-full ${backgroundClassName} align-middle text-[#18181b] max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-4px]`}
+      className={`mx-2 inline-flex h-[74px] w-[200px] translate-y-[-14px] items-center overflow-hidden rounded-full ${backgroundClassName} px-5 align-middle text-[#18181b] max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-4px] max-[768px]:px-3`}
       >
       <span
-        className={`flex min-w-max ${animationClass} items-center ${itemGap} px-5`}
+        className={`flex min-w-max ${animationClass} items-center`}
       >
-        {children}
+        <span className={`flex shrink-0 items-center ${itemGap} ${trailingGapClass}`}>
+          {children}
+        </span>
+        <span className={`flex shrink-0 items-center ${itemGap} ${trailingGapClass}`}>
+          {children}
+        </span>
       </span>
     </span>
   );
