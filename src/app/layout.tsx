@@ -1,28 +1,64 @@
 import type { Metadata } from "next";
-import { Geist, IBM_Plex_Mono, Manrope, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import { SiteHeader } from "@/components/site-header";
-import { cn } from "@/lib/utils";
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
+const neueMontreal = localFont({
+  src: [
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-Light.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-Regular.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-Medium.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-Bold.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-LightItalic.otf",
+      weight: "300",
+      style: "italic",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-Italic.otf",
+      weight: "400",
+      style: "italic",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-MediumItalic.otf",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "./fonts/Neue Montreal/NeueMontreal-BoldItalic.otf",
+      weight: "700",
+      style: "italic",
+    },
+  ],
+  variable: "--font-neue-montreal",
+  display: "swap",
 });
 
-const bodyFont = Manrope({
-  variable: "--font-body",
-  subsets: ["latin"],
-});
-
-const displayFont = Newsreader({
-  variable: "--font-display",
-  subsets: ["latin"],
-});
-
-const monoFont = IBM_Plex_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const copernicusNewCond = localFont({
+  src: [
+    {
+      path: "./fonts/Copernicus New Cond/CopernicusNewCond-070.otf",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-copernicus-new-cond",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -30,8 +66,7 @@ export const metadata: Metadata = {
     default: "USA Goals",
     template: "%s | USA Goals",
   },
-  description:
-    "Investor-facing prototype for exploring the live federal strategy corpus exposed by APEX.",
+  description: "Browse federal plans, goals, indicators, themes, and agency owners.",
 };
 
 export default function RootLayout({
@@ -42,24 +77,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(
-        "h-full",
-        "font-sans",
-        "antialiased",
-        bodyFont.variable,
-        displayFont.variable,
-        monoFont.variable,
-        geist.variable,
-      )}
+      className={`${neueMontreal.variable} ${copernicusNewCond.variable}`}
     >
-      <body className="min-h-full">
-        <div className="relative flex min-h-screen flex-col">
-          <SiteHeader />
-          <main className="mx-auto flex w-full max-w-screen-2xl flex-1 flex-col px-4 py-6 sm:px-6">
-            {children}
-          </main>
-        </div>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

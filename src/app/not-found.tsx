@@ -2,18 +2,19 @@ import Link from "next/link";
 
 export default function NotFoundPage() {
   return (
-    <div className="card-surface mx-auto my-20 max-w-2xl space-y-4 p-8">
-      <p className="eyebrow">Not found</p>
-      <h1 className="font-display text-4xl text-[var(--ink-strong)]">
-        That strategy record is not in the current corpus.
-      </h1>
-      <p className="text-sm leading-7 text-[var(--ink-soft)]">
-        The route may point at a goal or agency that has not been extracted yet, or the
-        identifier is invalid.
-      </p>
-      <Link href="/explore" className="button-primary">
-        Return to explore
-      </Link>
-    </div>
+    <main className="grid min-h-screen place-items-center bg-taupe-100 px-6">
+      <section className="w-full max-w-md rounded-[1.75rem] bg-white/70 p-6 ring-1 ring-taupe-950/10">
+        <p className="text-sm/6 font-medium text-taupe-500">404</p>
+        <h1 className="mt-2 text-2xl/8 font-semibold tracking-tight text-taupe-950">
+          Not found
+        </h1>
+        <Link
+          href="/"
+          className="mt-5 inline-flex rounded-full bg-taupe-950 px-4 py-2 text-sm/6 font-medium text-white"
+        >
+          Browse catalog
+        </Link>
+      </section>
+    </main>
   );
 }

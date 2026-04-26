@@ -1,151 +1,406 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
 
-import { CatalogCard } from "@/components/catalog-card"
-import { DiscoverToolbar } from "@/components/discover-toolbar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { CatalogCard } from "@/components/catalog/catalog-card";
+import { getOverview } from "@/lib/apex";
 import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyTitle,
-} from "@/components/ui/empty"
-import { getOverview } from "@/lib/apex"
-import {
-  buildDiscoverHref,
-  discoverKindLabels,
-  discoverSortLabels,
-  discoverStatusLabels,
-  getDiscoverModel,
-} from "@/lib/catalog"
-import { formatCount } from "@/lib/utils"
+  buildCatalogHref,
+  catalogKindOptions,
+  getCatalogModel,
+  type CatalogState,
+} from "@/lib/catalog";
+import { formatCount } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Discover",
-  description:
-    "Catalog-style discover page for plans, goals, indicators, agencies, and collections from the live APEX corpus.",
-}
+  title: "Discovery",
+};
 
 type HomePageProps = {
   searchParams: Promise<{
-    q?: string
-    kind?: string
-    status?: string
-    sort?: string
-    limit?: string
-  }>
-}
+    q?: string;
+    kind?: string;
+    owner?: string;
+  }>;
+};
 
 export default async function HomePage({ searchParams }: HomePageProps) {
-  const params = await searchParams
-  const overview = await getOverview()
-  const model = getDiscoverModel(overview, params)
+  const params = await searchParams;
+  const overview = await getOverview();
+  const model = getCatalogModel(overview, params);
+  const featuredOwners = model.owners.slice(0, 12);
+  const scopeLabel = model.activeOwner?.abbreviation ?? "All owners";
 
   return (
-    <div className="flex flex-col gap-6 pb-8">
-      <section className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex max-w-3xl flex-col gap-2">
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              Discover
-            </p>
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
-              Browse the federal strategy catalog.
-            </h1>
-            <p className="text-sm leading-6 text-muted-foreground sm:text-base">
-              Plans, goals, indicators, collections, and agency profiles derived
-              from the live APEX API. This is the working application surface,
-              not a marketing homepage.
-            </p>
-          </div>
+    <main className="min-h-screen bg-[#18181b] text-white">
+      <SiteHeader
+        state={model.state}
+        totalItems={model.totalItems}
+        resultCount={model.totalMatches}
+      />
 
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">
-              {formatCount(model.totals.plans)} plans
-            </Badge>
-            <Badge variant="secondary">
-              {formatCount(model.totals.goals)} goals
-            </Badge>
-            <Badge variant="secondary">
-              {formatCount(model.totals.indicators)} indicators
-            </Badge>
-            <Badge variant="secondary">
-              {formatCount(model.totals.collections)} collections
-            </Badge>
-            <Badge variant="secondary">
-              {formatCount(model.totals.agencies)} active agencies
-            </Badge>
-          </div>
-        </div>
-      </section>
+      <div className="pt-[118px]">
+        <section className="flex w-full justify-center px-[100px] max-[1024px]:px-9 max-[440px]:px-4">
+          <div className="w-full max-w-[1440px]">
+            <div className="flex justify-center px-9 pb-[10vw] pt-[6vw] max-[800px]:px-0">
+              <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">
+                <h1 className="max-w-[1080px] text-[96px] font-medium leading-none max-[768px]:text-[42px]">
+                  The only{" "}
+                  <span className="font-serif italic">
+                    public
+                  </span>
+                  <AgencyMarquee owners={featuredOwners} />
+                  goal book you&apos;ll ever need.{" "}
+                  <span className="text-white/45">
+                    Explore federal outcomes in one place.
+                  </span>
+                </h1>
 
-      <DiscoverToolbar state={model.state} kindCounts={model.kindCounts} />
+                <p className="max-w-[640px] text-[18px] leading-7 text-[#a8afb7] max-[440px]:w-full">
+                  {formatCount(overview.goals.length)} goals,{" "}
+                  {formatCount(overview.documents.length)} plans, and{" "}
+                  {formatCount(overview.agencies.length)} owners from the live
+                  strategy corpus.
+                </p>
 
-      <section className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium text-foreground">
-            {formatCount(model.totalMatches)} records match the current filters.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Showing {formatCount(model.visibleMatches.length)}{" "}
-            {model.state.kind === "all"
-              ? "catalog results"
-              : discoverKindLabels[model.state.kind].toLowerCase()}
-            {" "}sorted by{" "}
-            {discoverSortLabels[model.state.sort].toLowerCase()}.
-          </p>
-        </div>
+                <div className="flex flex-col items-center gap-4">
+                  <div className="flex flex-wrap justify-center gap-2 max-[440px]:w-full max-[440px]:flex-col">
+                    <Link
+                      href="#discovery"
+                      className="inline-flex h-12 items-center justify-center rounded-full bg-[#ffe231] px-7 text-sm font-medium text-[#18181b] transition-opacity hover:opacity-90 max-[440px]:w-full"
+                    >
+                      Start exploring
+                    </Link>
+                    <Link
+                      href={toDiscoveryHref(
+                        buildCatalogHref(model.state, { kind: "owner" }),
+                      )}
+                      className="inline-flex h-12 items-center justify-center rounded-full bg-[#343538] px-7 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#3f4043] max-[440px]:w-full"
+                    >
+                      View owners
+                    </Link>
+                  </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline">
-            Status: {discoverStatusLabels[model.state.status]}
-          </Badge>
-          <Badge variant="outline">
-            Scope: {discoverKindLabels[model.state.kind]}
-          </Badge>
-        </div>
-      </section>
-
-      {model.visibleMatches.length > 0 ? (
-        <>
-          <section className="columns-1 gap-4 md:columns-2 xl:columns-3 2xl:columns-4">
-            {model.visibleMatches.map((item) => (
-              <CatalogCard key={item.id} item={item} />
-            ))}
-          </section>
-
-          {model.canShowMore ? (
-            <div className="flex justify-center pt-2">
-              <Button asChild variant="outline" size="lg" className="rounded-full">
-                <Link
-                  href={buildDiscoverHref(model.state, {
-                    limit: model.state.limit + 18,
-                  })}
-                >
-                  Show more
-                </Link>
-              </Button>
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#a8afb7]">
+                    {scopeLabel} / {formatCount(model.totalMatches)} results
+                  </p>
+                </div>
+              </div>
             </div>
-          ) : null}
-        </>
-      ) : (
-        <Empty className="rounded-3xl border border-dashed border-border bg-card py-16">
-          <EmptyHeader>
-            <EmptyTitle>No catalog records match this view.</EmptyTitle>
-            <EmptyDescription>
-              Try clearing the query or widening the status filter. The current
-              dataset is still sparse in some categories.
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button asChild variant="outline">
-              <Link href="/">Reset discover view</Link>
-            </Button>
-          </EmptyContent>
-        </Empty>
-      )}
+          </div>
+        </section>
+
+        <section
+          id="discovery"
+          className="flex w-full scroll-mt-[100px] justify-center px-[100px] pb-[100px] max-[1024px]:px-9 max-[440px]:px-4"
+        >
+          <div className="w-full max-w-[1440px]">
+            <div className="rounded-[28px] bg-[#27272a] p-10 max-[768px]:p-5">
+              <div className="grid items-end gap-8 lg:grid-cols-[minmax(0,1fr)_auto]">
+                <div className="min-w-0">
+                  <p className="mb-5 inline-flex h-8 items-center rounded-full bg-[#343538] px-3 text-xs font-medium uppercase tracking-[0.16em] text-[#a8afb7]">
+                    Discovery
+                  </p>
+                  <h2 className="max-w-[820px] text-[56px] font-medium leading-none tracking-[-0.055em] max-[768px]:text-[36px]">
+                    Browse the public performance archive.
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 max-[520px]:grid-cols-1">
+                  <MetricPill label="Goals" value={overview.goals.length} />
+                  <MetricPill label="Plans" value={overview.documents.length} />
+                  <MetricPill label="Owners" value={overview.agencies.length} />
+                </div>
+              </div>
+
+              <div className="mt-10 flex flex-col gap-4">
+                <SearchForm state={model.state} variant="panel" />
+
+                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                  <KindControls
+                    state={model.state}
+                    counts={model.kindCounts}
+                  />
+                  <OwnerControls state={model.state} owners={model.owners} />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex items-center justify-between gap-4 text-sm text-[#a8afb7]">
+              <p className="truncate">
+                {formatCount(model.totalMatches)} matches / {scopeLabel}
+                {model.state.q ? ` / ${model.state.q}` : ""}
+              </p>
+              <Link
+                href="/#discovery"
+                className="shrink-0 rounded-full bg-[#27272a] px-3 py-2 text-xs font-medium text-[#dadee4] transition-colors hover:bg-[#343538]"
+              >
+                Reset
+              </Link>
+            </div>
+
+            {model.visibleItems.length > 0 ? (
+              <div
+                data-component="Grid"
+                className="mt-6 grid grid-cols-12 gap-6"
+              >
+                {model.visibleItems.map((item) => (
+                  <CatalogCard key={item.id} item={item} />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-6 flex min-h-[360px] flex-col items-center justify-center rounded-[28px] bg-[#27272a] p-10 text-center">
+                <p className="text-[40px] font-medium leading-none tracking-[-0.05em]">
+                  No matches.
+                </p>
+                <p className="mt-3 max-w-[360px] text-sm leading-6 text-[#a8afb7]">
+                  Clear the search or switch owner to keep browsing.
+                </p>
+                <Link
+                  href="/#discovery"
+                  className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-[#ffe231] px-7 text-sm font-medium text-[#18181b]"
+                >
+                  Reset catalog
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function SiteHeader({
+  state,
+  totalItems,
+  resultCount,
+}: {
+  state: CatalogState;
+  totalItems: number;
+  resultCount: number;
+}) {
+  return (
+    <header className="fixed inset-x-0 top-0 z-50 grid h-[78px] grid-cols-12 items-center bg-[#18181b] px-9 max-[440px]:px-4">
+      <Link
+        href="/"
+        aria-label="USA Goals home"
+        className="col-span-3 inline-flex items-center lg:col-span-1"
+      >
+        <Image
+          src="/usagoals-logo.svg"
+          alt="USA Goals"
+          width={64}
+          height={32}
+          priority
+          className="h-5 w-auto invert"
+        />
+      </Link>
+
+      <nav className="col-span-5 hidden items-center gap-7 text-sm font-medium text-[#a8afb7] lg:flex">
+        <Link className="transition-colors hover:text-white" href="#discovery">
+          For You
+        </Link>
+        <Link
+          className="transition-colors hover:text-white"
+          href={toDiscoveryHref(buildCatalogHref(state, { kind: "goal" }))}
+        >
+          Explore
+        </Link>
+        <Link
+          className="transition-colors hover:text-white"
+          href={toDiscoveryHref(buildCatalogHref(state, { kind: "owner" }))}
+        >
+          Owners
+        </Link>
+      </nav>
+
+      <div className="col-span-4 hidden justify-center lg:flex">
+        <SearchForm state={state} variant="header" />
+      </div>
+
+      <div className="col-span-9 flex items-center justify-end gap-2 lg:col-span-2">
+        <span className="hidden h-9 items-center rounded-full bg-[#343538] px-3 text-sm font-medium text-[#dadee4] sm:inline-flex">
+          {formatCount(resultCount)} items
+        </span>
+        <span
+          className="inline-flex size-9 items-center justify-center rounded-full bg-[#343538] text-xs font-semibold tracking-[-0.04em] text-[#dadee4]"
+          title={`${formatCount(totalItems)} total items`}
+        >
+          US
+        </span>
+      </div>
+    </header>
+  );
+}
+
+function SearchForm({
+  state,
+  variant,
+}: {
+  state: CatalogState;
+  variant: "header" | "panel";
+}) {
+  const isHeader = variant === "header";
+
+  return (
+    <form
+      action="/#discovery"
+      className={
+        isHeader
+          ? "flex h-11 w-full max-w-[420px] items-center gap-2 rounded-md bg-[#27272a] py-1 pl-3.5 pr-1"
+          : "flex min-h-12 w-full flex-wrap items-center gap-2 rounded-md bg-[#343538] p-1 pl-4"
+      }
+    >
+      {state.kind !== "all" ? (
+        <input type="hidden" name="kind" value={state.kind} />
+      ) : null}
+      {state.owner !== "all" ? (
+        <input type="hidden" name="owner" value={state.owner} />
+      ) : null}
+      <input
+        name="q"
+        defaultValue={state.q}
+        placeholder="Search"
+        aria-label="Search catalog"
+        className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#a8afb7]"
+      />
+      <button
+        type="submit"
+        className={
+          isHeader
+            ? "inline-flex h-9 shrink-0 items-center justify-center rounded px-3 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#343538]"
+            : "inline-flex h-10 shrink-0 items-center justify-center rounded bg-[#ffe231] px-4 text-sm font-medium text-[#18181b]"
+        }
+      >
+        Go
+      </button>
+    </form>
+  );
+}
+
+function KindControls({
+  state,
+  counts,
+}: {
+  state: CatalogState;
+  counts: ReturnType<typeof getCatalogModel>["kindCounts"];
+}) {
+  return (
+    <div className="flex min-w-0 gap-2 overflow-x-auto pb-1">
+      {catalogKindOptions.map((option) => {
+        const active = state.kind === option.value;
+
+        return (
+          <Link
+            key={option.value}
+            href={toDiscoveryHref(
+              buildCatalogHref(state, { kind: option.value }),
+            )}
+            className={
+              active
+                ? "inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-[#18181b]"
+                : "inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-[#343538] px-4 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#3f4043]"
+            }
+          >
+            <span>{option.label}</span>
+            <span
+              className={
+                active ? "text-[#55575d]" : "text-[#a8afb7]"
+              }
+            >
+              {formatCount(counts[option.value])}
+            </span>
+          </Link>
+        );
+      })}
     </div>
-  )
+  );
+}
+
+function OwnerControls({
+  state,
+  owners,
+}: {
+  state: CatalogState;
+  owners: ReturnType<typeof getCatalogModel>["owners"];
+}) {
+  return (
+    <div className="flex min-w-0 gap-2 overflow-x-auto pb-1">
+      <Link
+        href={toDiscoveryHref(buildCatalogHref(state, { owner: "all" }))}
+        className={
+          state.owner === "all"
+            ? "inline-flex h-10 shrink-0 items-center rounded-full bg-white px-4 text-sm font-medium text-[#18181b]"
+            : "inline-flex h-10 shrink-0 items-center rounded-full bg-[#343538] px-4 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#3f4043]"
+        }
+      >
+        All owners
+      </Link>
+      {owners.slice(0, 16).map((owner) => {
+        const active = state.owner === owner.id;
+
+        return (
+          <Link
+            key={owner.id}
+            href={toDiscoveryHref(buildCatalogHref(state, { owner: owner.id }))}
+            className={
+              active
+                ? "inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-white px-4 text-sm font-medium text-[#18181b]"
+                : "inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-[#343538] px-4 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#3f4043]"
+            }
+          >
+            <span className="max-w-20 truncate">{owner.abbreviation}</span>
+            <span
+              className={
+                active ? "text-[#55575d]" : "text-[#a8afb7]"
+              }
+            >
+              {formatCount(owner.count)}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+function AgencyMarquee({
+  owners,
+}: {
+  owners: Array<{ id: string; abbreviation: string }>;
+}) {
+  const marks = [...owners, ...owners].slice(0, 24);
+
+  return (
+    <span className="mx-2 inline-flex h-[74px] w-[200px] translate-y-[-14px] items-center overflow-hidden rounded-full bg-white align-middle text-[#18181b] max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-4px]">
+      <span className="flex min-w-max animate-[discovery-marquee_22s_linear_infinite] items-center gap-5 px-5">
+        {marks.map((owner, index) => (
+          <span
+            key={`${owner.id}-${index}`}
+            className="text-sm font-semibold max-[768px]:text-[10px]"
+          >
+            {owner.abbreviation}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+}
+
+function MetricPill({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="min-w-[112px] rounded-[22px] bg-[#343538] px-4 py-3">
+      <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-[#a8afb7]">
+        {label}
+      </p>
+      <p className="mt-1 truncate text-xl font-medium tracking-[-0.04em]">
+        {formatCount(value)}
+      </p>
+    </div>
+  );
+}
+
+function toDiscoveryHref(href: string) {
+  return href === "/" ? "/#discovery" : `${href}#discovery`;
 }
