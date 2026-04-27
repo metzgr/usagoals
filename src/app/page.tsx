@@ -47,6 +47,9 @@ export default async function HomePage() {
       <div className="fixed right-6 top-[calc(var(--site-banner-height)+1.5rem)] z-50 max-[440px]:right-4">
         <DownloadDataButton />
       </div>
+      <div className="fixed left-1/2 top-[calc(var(--site-banner-height)+1.25rem)] z-50 w-full max-w-[420px] -translate-x-1/2 px-4 max-[760px]:top-[calc(var(--site-banner-height)+4.75rem)]">
+        <HomeSearchForm />
+      </div>
 
       <section className="flex w-full max-w-[1440px] justify-center">
         <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">
@@ -80,6 +83,29 @@ export default async function HomePage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function HomeSearchForm() {
+  return (
+    <form
+      action="/explore#discovery"
+      method="get"
+      className="flex min-h-11 w-full items-center gap-2 rounded-md bg-[#27272a] p-1 pl-3.5"
+    >
+      <input
+        name="q"
+        placeholder="Search"
+        aria-label="Search site"
+        className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#a8afb7]"
+      />
+      <button
+        type="submit"
+        className="inline-flex h-10 shrink-0 items-center justify-center rounded bg-[#59A9FF] px-4 text-sm font-medium text-[#18181b]"
+      >
+        Go
+      </button>
+    </form>
   );
 }
 
