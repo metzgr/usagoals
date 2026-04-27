@@ -90,6 +90,7 @@ export function parseCatalogState(params: {
 export function buildCatalogHref(
   state: CatalogState,
   patch: Partial<CatalogState>,
+  basePath = "/",
 ) {
   const next = { ...state, ...patch };
   const params = new URLSearchParams();
@@ -107,7 +108,7 @@ export function buildCatalogHref(
   }
 
   const query = params.toString();
-  return query ? `/?${query}` : "/";
+  return query ? `${basePath}?${query}` : basePath;
 }
 
 export function getCatalogModel(

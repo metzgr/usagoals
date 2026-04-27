@@ -30,7 +30,7 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
         <button
           type="button"
           aria-label={`Save ${item.title}`}
-          className="absolute bottom-2.5 right-2.5 inline-flex size-9 origin-bottom-right translate-y-0.5 scale-[0.98] items-center justify-center rounded-full bg-[#ffe231] text-[#18181b] opacity-0 transition duration-150 group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 max-[1024px]:opacity-100"
+          className="absolute bottom-2.5 right-2.5 inline-flex size-9 origin-bottom-right translate-y-0.5 scale-[0.98] items-center justify-center rounded-full bg-[#59A9FF] text-[#18181b] opacity-0 transition duration-150 group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 max-[1024px]:opacity-100"
         >
           <svg
             viewBox="0 0 24 24"

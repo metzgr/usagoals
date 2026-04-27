@@ -5,5 +5,8 @@ import { getSiteUrl } from "@/lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = getSiteUrl();
 
-  return [{ url: siteUrl, changeFrequency: "weekly", priority: 1 }];
+  return [
+    { url: siteUrl, changeFrequency: "weekly", priority: 1 },
+    { url: `${siteUrl}/explore`, changeFrequency: "weekly", priority: 0.9 },
+  ];
 }
