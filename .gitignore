@@ -20,6 +20,9 @@
 # production
 /build
 
+# downloaded reference websites
+design-system-reference/
+
 # misc
 .DS_Store
 *.pem
