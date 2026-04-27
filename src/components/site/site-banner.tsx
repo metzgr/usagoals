@@ -30,7 +30,7 @@ export function SiteBanner() {
           >
             <circle r="1" cx="1" cy="1" />
           </svg>
-          An AI-driven research project by the Office of Government-wide Policy at GSA &nbsp;
+          An AI-driven research project from Performance.gov &nbsp;
           <span aria-hidden="true">&rarr;</span>
         </Link>
       </p>

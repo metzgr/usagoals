@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { SiteBanner } from "@/components/site/site-banner";
+import { SiteHeader } from "@/components/site/site-header";
 
 import "./globals.css";
 
@@ -64,6 +65,18 @@ const copernicusNewCond = localFont({
   display: "swap",
 });
 
+const copernicusNewCond130 = localFont({
+  src: [
+    {
+      path: "./fonts/Copernicus New Cond/CopernicusNewCond-130.otf",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-copernicus-new-cond-130",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "USA Goals",
@@ -80,10 +93,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${neueMontreal.variable} ${copernicusNewCond.variable}`}
+      className={`${neueMontreal.variable} ${copernicusNewCond.variable} ${copernicusNewCond130.variable}`}
     >
       <body>
         <SiteBanner />
+        <SiteHeader />
         {children}
       </body>
     </html>

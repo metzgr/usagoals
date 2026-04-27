@@ -29,6 +29,7 @@
 @theme inline {
   --font-display: var(--font-copernicus-new-cond);
   --font-serif: var(--font-copernicus-new-cond);
+  --font-card-title: var(--font-copernicus-new-cond-130);
   --font-sans: var(--font-neue-montreal);
   --color-taupe-50: oklch(0.986 0.002 67.8);
   --color-taupe-100: oklch(0.96 0.002 17.2);

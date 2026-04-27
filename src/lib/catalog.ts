@@ -62,6 +62,27 @@ export type CatalogModel = {
   kindCounts: Record<CatalogKind, number>;
 };
 
+export const goalCatalogViews = [
+  { value: "newest", label: "Newest" },
+  { value: "trending", label: "Trending" },
+  { value: "agencies", label: "Agencies" },
+] as const;
+
+export type GoalCatalogView = (typeof goalCatalogViews)[number]["value"];
+
+export type GoalCatalogState = {
+  q: string;
+  view: GoalCatalogView;
+};
+
+export type GoalCatalogModel = {
+  state: GoalCatalogState;
+  totalGoals: number;
+  totalMatches: number;
+  visibleItems: CatalogItem[];
+  agencyCount: number;
+};
+
 type OverviewData = {
   agencies: AgencySummary[];
   documents: DocumentSummary[];
@@ -71,6 +92,7 @@ type OverviewData = {
 
 const DEFAULT_OWNER = "all";
 const DEFAULT_KIND: CatalogKind = "all";
+const DEFAULT_GOAL_VIEW: GoalCatalogView = "newest";
 const VISIBLE_LIMIT = 60;
 
 export function parseCatalogState(params: {
@@ -149,6 +171,136 @@ export function getCatalogModel(
     visibleItems,
     kindCounts,
   };
+}
+
+export function getGoalCatalogModel(
+  overview: OverviewData,
+  params: {
+    q?: string;
+    view?: string;
+  },
+): GoalCatalogModel {
+  const state = parseGoalCatalogState(params);
+  const owners = buildOwners(overview.agencies);
+  const ownerMap = new Map(owners.map((owner) => [owner.id, owner]));
+  const goalItems = buildCatalogItems(overview, ownerMap).filter(
+    (item) => item.kind === "goal",
+  );
+  const searched = filterGoalItemsByQuery(goalItems, state.q);
+  const visibleItems = sortGoalItems(searched, state).slice(0, VISIBLE_LIMIT);
+
+  return {
+    state,
+    totalGoals: goalItems.length,
+    totalMatches: searched.length,
+    visibleItems,
+    agencyCount: owners.length,
+  };
+}
+
+function parseGoalCatalogState(params: {
+  q?: string;
+  view?: string;
+}): GoalCatalogState {
+  const q = compact(params.q);
+  const view = goalCatalogViews.some((option) => option.value === params.view)
+    ? (params.view as GoalCatalogView)
+    : DEFAULT_GOAL_VIEW;
+
+  return { q, view };
+}
+
+function sortGoalItems(items: CatalogItem[], state: GoalCatalogState) {
+  let sorted: CatalogItem[];
+
+  if (state.view === "trending") {
+    sorted = rankItems(items, "");
+  } else if (state.view === "agencies") {
+    sorted = [...items].sort(
+      (a, b) =>
+        a.owner.name.localeCompare(b.owner.name) ||
+        a.title.localeCompare(b.title),
+    );
+  } else {
+    sorted = [...items].sort(
+      (a, b) => getItemNumericId(b) - getItemNumericId(a),
+    );
+  }
+
+  const tokens = getSearchTokens(state.q);
+
+  if (tokens.length === 0) {
+    return sorted;
+  }
+
+  return sorted.sort(
+    (a, b) => getGoalSearchScore(b, tokens) - getGoalSearchScore(a, tokens),
+  );
+}
+
+function getItemNumericId(item: CatalogItem) {
+  return Number(item.id.split(":").at(1)) || 0;
+}
+
+function filterGoalItemsByQuery(items: CatalogItem[], query: string) {
+  const tokens = getSearchTokens(query);
+
+  if (tokens.length === 0) {
+    return items;
+  }
+
+  return items.filter((item) => {
+    const searchText = getGoalSearchText(item);
+    return tokens.every((token) => searchText.includes(token));
+  });
+}
+
+function getGoalSearchScore(item: CatalogItem, tokens: string[]) {
+  const title = normalizeSearchText(item.title);
+  const ownerName = normalizeSearchText(item.owner.name);
+  const ownerAbbreviation = normalizeSearchText(item.owner.abbreviation);
+
+  return tokens.reduce((score, token) => {
+    if (title === token) {
+      return score + 120;
+    }
+
+    if (title.startsWith(token)) {
+      return score + 90;
+    }
+
+    if (ownerAbbreviation === token) {
+      return score + 80;
+    }
+
+    if (title.includes(token)) {
+      return score + 60;
+    }
+
+    if (ownerName.includes(token)) {
+      return score + 45;
+    }
+
+    if (ownerAbbreviation.includes(token)) {
+      return score + 35;
+    }
+
+    return score;
+  }, 0);
+}
+
+function getGoalSearchText(item: CatalogItem) {
+  return [item.title, item.owner.name, item.owner.abbreviation]
+    .map(normalizeSearchText)
+    .join(" ");
+}
+
+function getSearchTokens(query: string) {
+  return normalizeSearchText(query).split(/\s+/).filter(Boolean);
+}
+
+function normalizeSearchText(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 }
 
 function buildOwners(agencies: AgencySummary[]): CatalogOwner[] {

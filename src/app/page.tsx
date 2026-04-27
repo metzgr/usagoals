@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { DownloadDataButton } from "@/components/site/download-data-button";
-
 const artworkExtensions = new Set([
   ".avif",
   ".gif",
@@ -29,28 +27,7 @@ export default async function HomePage() {
   const goalArtwork = await getGoalArtwork();
 
   return (
-    <main className="flex min-h-[calc(100dvh-var(--site-banner-height))] items-center justify-center bg-[#18181b] px-[100px] py-12 text-white max-[1024px]:px-9 max-[440px]:px-4">
-      <Link
-        href="/"
-        aria-label="USA Goals home"
-        className="fixed left-6 top-[calc(var(--site-banner-height)+1.75rem)] z-50 inline-flex items-center max-[440px]:left-4"
-      >
-        <Image
-          src="/usagoals-logo.svg"
-          alt="USA Goals"
-          width={56}
-          height={28}
-          priority
-          className="h-auto w-14 invert"
-        />
-      </Link>
-      <div className="fixed right-6 top-[calc(var(--site-banner-height)+1.5rem)] z-50 max-[440px]:right-4">
-        <DownloadDataButton />
-      </div>
-      <div className="fixed left-1/2 top-[calc(var(--site-banner-height)+1.25rem)] z-50 w-full max-w-[560px] -translate-x-1/2 px-4 max-[760px]:top-[calc(var(--site-banner-height)+4.75rem)]">
-        <HomeSearchForm />
-      </div>
-
+    <main className="flex min-h-[calc(100dvh-var(--site-banner-height)-78px)] items-center justify-center bg-[#18181b] px-[100px] py-12 text-white max-[1024px]:px-9 max-[440px]:px-4">
       <section className="flex w-full max-w-[1440px] justify-center">
         <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">
           <h1 className="max-w-[1080px] font-serif text-[96px] font-medium leading-none tracking-[-0.008em] max-[768px]:text-[42px]">
@@ -74,7 +51,7 @@ export default async function HomePage() {
               Discover
             </Link>
             <Link
-              href="/explore?kind=owner#discovery"
+              href="/explore?view=agencies#discovery"
               className="inline-flex h-12 items-center justify-center rounded-full bg-[#343538] px-7 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#3f4043] max-[440px]:w-full"
             >
               Learn more
@@ -83,29 +60,6 @@ export default async function HomePage() {
         </div>
       </section>
     </main>
-  );
-}
-
-function HomeSearchForm() {
-  return (
-    <form
-      action="/explore#discovery"
-      method="get"
-      className="flex min-h-11 w-full items-center gap-2 rounded-md bg-[#27272a] p-1 pl-3.5"
-    >
-      <input
-        name="q"
-        placeholder="Search site"
-        aria-label="Search site"
-        className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#a8afb7]"
-      />
-      <button
-        type="submit"
-        className="inline-flex h-10 shrink-0 items-center justify-center rounded bg-[#3f4043] px-4 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#494a4d] hover:text-white"
-      >
-        Go
-      </button>
-    </form>
   );
 }
 

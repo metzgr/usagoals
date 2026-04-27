@@ -1,31 +1,20 @@
+import { AutoFitGoalTitle } from "@/components/catalog/auto-fit-goal-title";
 import type { CatalogItem } from "@/lib/catalog";
-
-const kindLabels: Record<CatalogItem["kind"], string> = {
-  goal: "Goal",
-  plan: "Plan",
-  indicator: "Indicator",
-  theme: "Theme",
-  owner: "Owner",
-};
 
 export function CatalogCard({ item }: { item: CatalogItem }) {
   const primaryMetric = item.metrics[0];
   const secondaryMetric = item.metrics[1];
-  const seal = item.owner.abbreviation.replace(/[^a-zA-Z0-9]/g, "").slice(0, 4);
+  const ownerInitial = item.owner.abbreviation
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .slice(0, 1);
 
   return (
     <article
       id={item.id}
-      className="group col-span-3 min-w-0 max-[1024px]:col-span-4 max-[768px]:col-span-6"
+      className="group col-span-3 min-w-0 max-[1024px]:col-span-4 max-[900px]:col-span-3 max-[640px]:col-span-1"
     >
-      <div className="relative flex aspect-[1/1.15] cursor-pointer items-center justify-center rounded-lg border-2 border-[#27272a] bg-[#27272a] px-[20%] transition duration-150 hover:-translate-y-0.5 hover:border-[#343538]">
-        <div className="flex h-[60%] w-[80%] items-center justify-center">
-          <div className="flex aspect-square h-[65%] items-center justify-center rounded-full border border-white/10 bg-white/5">
-            <span className="max-w-full truncate text-[clamp(1.8rem,3vw,3.5rem)] font-semibold leading-none tracking-[-0.08em] text-white">
-              {seal || "US"}
-            </span>
-          </div>
-        </div>
+      <div className="relative flex aspect-[1/1.15] cursor-pointer items-start justify-start rounded-lg border-2 border-[#27272a] bg-[#27272a] p-8 text-left transition duration-150 hover:-translate-y-0.5 hover:border-[#343538] max-[640px]:p-6">
+        <AutoFitGoalTitle title={item.title} />
 
         <button
           type="button"
@@ -52,18 +41,14 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
       <div className="mt-3 flex min-w-0 flex-col gap-[0.55rem] overflow-hidden">
         <div className="flex min-w-0 items-center gap-1.5 overflow-hidden text-xs text-[#a8afb7]">
           <span className="inline-flex size-3 shrink-0 items-center justify-center rounded-full bg-[#dadee4] text-[7px] font-semibold text-[#18181b]">
-            {(seal || "US").slice(0, 1)}
+            {ownerInitial || "U"}
           </span>
           <span className="truncate">{item.owner.name}</span>
         </div>
 
-        <h3 className="line-clamp-2 text-[15px] font-medium leading-5 tracking-[-0.02em] text-white">
-          {item.title}
-        </h3>
-
         <div className="relative flex min-w-0 items-center gap-1 overflow-hidden text-xs text-[#a8afb7]/75">
           <span className="shrink-0 rounded-full bg-[#27272a] px-2.5 py-1 font-medium">
-            {kindLabels[item.kind]}
+            Goal
           </span>
           <span className="shrink-0 rounded-full bg-[#27272a] px-2.5 py-1 font-medium">
             {item.timeLabel}
