@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { DownloadDataButton } from "@/components/site/download-data-button";
+
 const artworkExtensions = new Set([
   ".avif",
   ".gif",
@@ -27,21 +29,24 @@ export default async function HomePage() {
   const goalArtwork = await getGoalArtwork();
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-[#18181b] px-[100px] py-12 text-white max-[1024px]:px-9 max-[440px]:px-4">
+    <main className="flex min-h-[calc(100dvh-var(--site-banner-height))] items-center justify-center bg-[#18181b] px-[100px] py-12 text-white max-[1024px]:px-9 max-[440px]:px-4">
       <Link
         href="/"
         aria-label="USA Goals home"
-        className="fixed left-6 top-7 z-50 inline-flex items-center max-[440px]:left-4"
+        className="fixed left-6 top-[calc(var(--site-banner-height)+1.75rem)] z-50 inline-flex items-center max-[440px]:left-4"
       >
         <Image
           src="/usagoals-logo.svg"
           alt="USA Goals"
-          width={64}
-          height={32}
+          width={60}
+          height={30}
           priority
-          className="h-7 w-auto invert"
+          className="h-auto w-[60px] invert"
         />
       </Link>
+      <div className="fixed right-6 top-[calc(var(--site-banner-height)+1.5rem)] z-50 max-[440px]:right-4">
+        <DownloadDataButton />
+      </div>
 
       <section className="flex w-full max-w-[1440px] justify-center">
         <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">

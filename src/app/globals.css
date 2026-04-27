@@ -23,6 +23,7 @@
   --input: oklch(0.868 0.007 39.5);
   --ring: oklch(0.547 0.021 43.1);
   --radius: 0.5rem;
+  --site-banner-height: 44px;
 }
 
 @theme inline {

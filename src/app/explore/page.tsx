@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { CatalogCard } from "@/components/catalog/catalog-card";
+import { DownloadDataButton } from "@/components/site/download-data-button";
 import { getOverview } from "@/lib/apex";
 import {
   buildCatalogHref,
@@ -38,7 +39,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         resultCount={model.totalMatches}
       />
 
-      <div className="pt-[118px]">
+      <div className="pt-10">
         <section
           id="discovery"
           className="flex w-full scroll-mt-[100px] justify-center px-[100px] pb-[100px] max-[1024px]:px-9 max-[440px]:px-4"
@@ -130,7 +131,7 @@ function SiteHeader({
   resultCount: number;
 }) {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 grid h-[78px] grid-cols-12 items-center bg-[#18181b] px-9 max-[440px]:px-4">
+    <header className="sticky top-0 z-50 grid h-[78px] grid-cols-12 items-center bg-[#18181b] px-9 max-[440px]:px-4">
       <Link
         href="/"
         aria-label="USA Goals home"
@@ -168,11 +169,12 @@ function SiteHeader({
         </Link>
       </nav>
 
-      <div className="col-span-4 hidden justify-center lg:flex">
+      <div className="col-span-3 hidden justify-center lg:flex">
         <SearchForm state={state} variant="header" />
       </div>
 
-      <div className="col-span-9 flex items-center justify-end gap-2 lg:col-span-2">
+      <div className="col-span-9 flex items-center justify-end gap-2 lg:col-span-3">
+        <DownloadDataButton />
         <span className="hidden h-9 items-center rounded-full bg-[#343538] px-3 text-sm font-medium text-[#dadee4] sm:inline-flex">
           {formatCount(resultCount)} items
         </span>

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+
+import { SiteBanner } from "@/components/site/site-banner";
+
 import "./globals.css";
 
 const neueMontreal = localFont({
@@ -79,7 +82,10 @@ export default function RootLayout({
       lang="en"
       className={`${neueMontreal.variable} ${copernicusNewCond.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <SiteBanner />
+        {children}
+      </body>
     </html>
   );
 }
