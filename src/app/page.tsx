@@ -38,16 +38,16 @@ export default async function HomePage() {
         <Image
           src="/usagoals-logo.svg"
           alt="USA Goals"
-          width={60}
-          height={30}
+          width={56}
+          height={28}
           priority
-          className="h-auto w-[60px] invert"
+          className="h-auto w-14 invert"
         />
       </Link>
       <div className="fixed right-6 top-[calc(var(--site-banner-height)+1.5rem)] z-50 max-[440px]:right-4">
         <DownloadDataButton />
       </div>
-      <div className="fixed left-1/2 top-[calc(var(--site-banner-height)+1.25rem)] z-50 w-full max-w-[420px] -translate-x-1/2 px-4 max-[760px]:top-[calc(var(--site-banner-height)+4.75rem)]">
+      <div className="fixed left-1/2 top-[calc(var(--site-banner-height)+1.25rem)] z-50 w-full max-w-[560px] -translate-x-1/2 px-4 max-[760px]:top-[calc(var(--site-banner-height)+4.75rem)]">
         <HomeSearchForm />
       </div>
 
@@ -95,13 +95,13 @@ function HomeSearchForm() {
     >
       <input
         name="q"
-        placeholder="Search"
+        placeholder="Search site"
         aria-label="Search site"
         className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#a8afb7]"
       />
       <button
         type="submit"
-        className="inline-flex h-10 shrink-0 items-center justify-center rounded bg-[#59A9FF] px-4 text-sm font-medium text-[#18181b]"
+        className="inline-flex h-10 shrink-0 items-center justify-center rounded bg-[#3f4043] px-4 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#494a4d] hover:text-white"
       >
         Go
       </button>

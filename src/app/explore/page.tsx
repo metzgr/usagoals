@@ -140,10 +140,10 @@ function SiteHeader({
         <Image
           src="/usagoals-logo.svg"
           alt="USA Goals"
-          width={64}
-          height={32}
+          width={56}
+          height={28}
           priority
-          className="h-5 w-auto invert"
+          className="h-auto w-14 invert"
         />
       </Link>
 
