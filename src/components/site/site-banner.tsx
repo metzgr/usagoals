@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export function SiteBanner() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(true);
+
+  if (pathname.startsWith("/goals/")) {
+    return null;
+  }
 
   function dismissBanner() {
     document.documentElement.style.setProperty("--site-banner-height", "0px");
