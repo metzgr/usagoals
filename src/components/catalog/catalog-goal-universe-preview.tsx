@@ -27,7 +27,7 @@ export function CatalogGoalUniversePreview({
         <path
           d={graph.edgePath}
           fill="none"
-          stroke="#000"
+          stroke="#EDE7DD"
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeOpacity="0.055"
