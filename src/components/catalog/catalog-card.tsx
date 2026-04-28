@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AgencyAvatar } from "@/components/catalog/agency-avatar";
+import { AutoFitClampedTitle } from "@/components/catalog/auto-fit-clamped-title";
 import type { CatalogItem } from "@/lib/catalog";
 
 export function CatalogCard({ item }: { item: CatalogItem }) {
@@ -37,9 +38,7 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
             <span className="truncate">{item.owner.name}</span>
           </div>
 
-          <h2 className="line-clamp-3 max-w-full font-card-title text-[40px] font-normal uppercase leading-[0.95] tracking-normal text-white">
-            {item.title}
-          </h2>
+          <AutoFitClampedTitle>{item.title}</AutoFitClampedTitle>
         </div>
 
         <div className="flex max-w-full flex-wrap gap-1.5 pr-10">
