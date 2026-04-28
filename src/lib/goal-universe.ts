@@ -99,8 +99,8 @@ export const getGoalUniverseGraph = cache(async () => {
         "US";
       const agencyAngle = agencyAngles.get(goal.agency_id) ?? 0;
       const seed = stableUnit(goalNodeId);
-      const spread = 50 + seed * 74;
-      const angle = agencyAngle + (stableUnit(`${goalNodeId}:angle`) - 0.5) * 0.9;
+      const spread = 64 + seed * 96;
+      const angle = agencyAngle + (stableUnit(`${goalNodeId}:angle`) - 0.5) * 1.04;
 
       return {
         id: goalNodeId,
@@ -111,7 +111,7 @@ export const getGoalUniverseGraph = cache(async () => {
         agencyAngle,
         radius: 3.1 + Math.min(Math.sqrt(connectionCount), 3.9) * 1.12,
         x: chartWidth / 2 + Math.cos(angle) * spread,
-        y: chartHeight / 2 + Math.sin(angle) * spread * 0.66,
+        y: chartHeight / 2 + Math.sin(angle) * spread * 0.74,
       };
     })
     .sort((left, right) => left.id.localeCompare(right.id));
@@ -122,31 +122,31 @@ export const getGoalUniverseGraph = cache(async () => {
       "link",
       forceLink<LayoutNode, LayoutEdge>(layoutEdges)
         .id((node) => node.id)
-        .distance((edge) => 38 - edge.strength * 9)
-        .strength((edge) => 0.2 + edge.strength * 0.42),
+        .distance((edge) => 52 - edge.strength * 11)
+        .strength((edge) => 0.14 + edge.strength * 0.32),
     )
     .force(
       "charge",
-      forceManyBody<LayoutNode>().strength((node) => -12 - node.connectionCount * 1.65),
+      forceManyBody<LayoutNode>().strength((node) => -20 - node.connectionCount * 2.35),
     )
     .force(
       "collide",
       forceCollide<LayoutNode>()
-        .radius((node) => node.radius * 0.82 + 1.4)
-        .iterations(1),
+        .radius((node) => node.radius + 3.8)
+        .iterations(2),
     )
     .force("center", forceCenter(chartWidth / 2, chartHeight / 2))
     .force(
       "x",
       forceX<LayoutNode>(
-        (node) => chartWidth / 2 + Math.cos(node.agencyAngle) * 34,
-      ).strength(0.035),
+        (node) => chartWidth / 2 + Math.cos(node.agencyAngle) * 54,
+      ).strength(0.045),
     )
     .force(
       "y",
       forceY<LayoutNode>(
-        (node) => chartHeight / 2 + Math.sin(node.agencyAngle) * 24,
-      ).strength(0.045),
+        (node) => chartHeight / 2 + Math.sin(node.agencyAngle) * 38,
+      ).strength(0.055),
     )
     .stop()
     .tick(260);
