@@ -41,12 +41,7 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
           <AutoFitClampedTitle>{item.title}</AutoFitClampedTitle>
         </div>
 
-        <div
-          aria-hidden="true"
-          className="-mx-0.5 min-h-0 w-[calc(100%+4px)] flex-1 bg-[#EDE7DD]"
-        />
-
-        <div className="flex max-w-full flex-wrap gap-1.5 p-6 pr-10 max-[640px]:p-5 max-[640px]:pr-10">
+        <div className="mt-auto flex max-w-full flex-wrap gap-1.5 p-6 pr-10 max-[640px]:p-5 max-[640px]:pr-10">
           {fiscalYear ? (
             <span className="max-w-[9rem] truncate rounded-full bg-[#343538] px-2.5 py-1 text-xs font-medium text-[#a8afb7]/75">
               {fiscalYear}
