@@ -36,7 +36,7 @@ export function SiteBanner() {
           >
             <circle r="1" cx="1" cy="1" />
           </svg>
-          An AI-driven research project from Performance.gov &nbsp;
+          An AI-driven research project by Ivan Metzger &nbsp;
           <span aria-hidden="true">&rarr;</span>
         </Link>
       </p>
