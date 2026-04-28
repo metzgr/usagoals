@@ -41,6 +41,7 @@ export type GoalUniverseEdge = {
   y1: number;
   x2: number;
   y2: number;
+  path: string;
 };
 
 export type GoalUniverseGraph = {
@@ -60,7 +61,7 @@ type LayoutNode = Omit<GoalUniverseNode, "x" | "y" | "radius"> &
 
 type LayoutEdge = Omit<
   GoalUniverseEdge,
-  "x1" | "y1" | "x2" | "y2" | "source" | "target"
+  "x1" | "y1" | "x2" | "y2" | "path" | "source" | "target"
 > &
   SimulationLinkDatum<LayoutNode> & {
     source: string | LayoutNode;
@@ -158,6 +159,10 @@ export const getGoalUniverseGraph = cache(async () => {
   const renderedEdges = layoutEdges.map((edge) => {
     const source = edge.source as LayoutNode;
     const target = edge.target as LayoutNode;
+    const x1 = round(source.x ?? chartWidth / 2);
+    const y1 = round(source.y ?? chartHeight / 2);
+    const x2 = round(target.x ?? chartWidth / 2);
+    const y2 = round(target.y ?? chartHeight / 2);
 
     return {
       id: edge.id,
@@ -166,10 +171,11 @@ export const getGoalUniverseGraph = cache(async () => {
       sourceGoalId: edge.sourceGoalId,
       targetGoalId: edge.targetGoalId,
       strength: edge.strength,
-      x1: round(source.x ?? chartWidth / 2),
-      y1: round(source.y ?? chartHeight / 2),
-      x2: round(target.x ?? chartWidth / 2),
-      y2: round(target.y ?? chartHeight / 2),
+      x1,
+      y1,
+      x2,
+      y2,
+      path: getCurvedEdgePath(edge.id, x1, y1, x2, y2),
     };
   });
 
@@ -185,9 +191,7 @@ export const getGoalUniverseGraph = cache(async () => {
       radius: round(node.radius),
     })),
     edges: renderedEdges,
-    edgePath: renderedEdges
-      .map((edge) => `M${edge.x1} ${edge.y1}L${edge.x2} ${edge.y2}`)
-      .join(" "),
+    edgePath: renderedEdges.map((edge) => edge.path).join(" "),
     neighborsByGoalId: Object.fromEntries(
       [...neighborSets.entries()].map(([goalId, neighbors]) => [
         goalId,
@@ -254,6 +258,31 @@ function getAgencyAngles(goals: GoalSummary[]) {
       -Math.PI / 2 + (Math.PI * 2 * index) / Math.max(agencyIds.length, 1),
     ]),
   );
+}
+
+function getCurvedEdgePath(
+  id: string,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const distance = Math.hypot(dx, dy) || 1;
+  const normalX = -dy / distance;
+  const normalY = dx / distance;
+  const direction = stableUnit(`${id}:direction`) > 0.5 ? 1 : -1;
+  const bend =
+    direction *
+    Math.min(26, Math.max(6, distance * (0.18 + stableUnit(`${id}:bend`) * 0.1)));
+  const pull = 0.26 + stableUnit(`${id}:pull`) * 0.1;
+  const c1x = round(x1 + dx * pull + normalX * bend);
+  const c1y = round(y1 + dy * pull + normalY * bend);
+  const c2x = round(x2 - dx * pull + normalX * bend);
+  const c2y = round(y2 - dy * pull + normalY * bend);
+
+  return `M${x1} ${y1}C${c1x} ${c1y} ${c2x} ${c2y} ${x2} ${y2}`;
 }
 
 function getOrCreateSet(map: Map<number, Set<number>>, key: number) {
