@@ -27,13 +27,13 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
       <Link
         href={href}
         aria-label={`View ${item.title}`}
-        className="relative flex aspect-[3/4] cursor-pointer flex-col items-start justify-between rounded-lg border-2 border-[#27272a] bg-[#27272a] p-6 text-left outline-none transition duration-150 hover:-translate-y-0.5 hover:border-[#343538] focus-visible:ring-2 focus-visible:ring-[#59A9FF] max-[640px]:p-5"
+        className="relative flex aspect-[3/4] cursor-pointer flex-col items-start overflow-hidden rounded-lg border-2 border-[#27272a] bg-[#27272a] text-left outline-none transition duration-150 hover:-translate-y-0.5 hover:border-[#343538] focus-visible:ring-2 focus-visible:ring-[#59A9FF]"
       >
         <div className="absolute right-5 top-5">
           <AgencyAvatar owner={item.owner} size="sm" />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-5 pr-7">
+        <div className="flex min-w-0 flex-col gap-5 p-6 pr-[52px] max-[640px]:p-5 max-[640px]:pr-[52px]">
           <div className="flex min-w-0 text-xs text-[#a8afb7]">
             <span className="truncate">{item.owner.name}</span>
           </div>
@@ -41,7 +41,9 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
           <AutoFitClampedTitle>{item.title}</AutoFitClampedTitle>
         </div>
 
-        <div className="flex max-w-full flex-wrap gap-1.5 pr-10">
+        <div aria-hidden="true" className="min-h-0 w-full flex-1 bg-[#EDE7DD]" />
+
+        <div className="flex max-w-full flex-wrap gap-1.5 p-6 pr-10 max-[640px]:p-5 max-[640px]:pr-10">
           {fiscalYear ? (
             <span className="max-w-[9rem] truncate rounded-full bg-[#343538] px-2.5 py-1 text-xs font-medium text-[#a8afb7]/75">
               {fiscalYear}
