@@ -23,7 +23,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
     getOverview(),
     getGoalUniverseGraph(),
   ]);
-  const model = getGoalCatalogModel(overview, params);
+  const model = await getGoalCatalogModel(overview, params);
 
   return (
     <main className="min-h-screen bg-[#18181b] text-white">
