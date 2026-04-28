@@ -1,6 +1,6 @@
 import type { GoalUniverseGraph } from "@/lib/goal-universe";
 
-const highlightColor = "#EF2019";
+const highlightColor = "#EDE7DD";
 const cardSurfaceColor = "#27272a";
 const cardBackgroundColor = "#18181b";
 
