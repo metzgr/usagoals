@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 
 const maxFontSize = 40;
 const minFontSize = 6;
-const lineHeightRatio = 42 / 40;
 const maxLines = 3;
 
 export function AutoFitClampedTitle({
@@ -37,19 +36,19 @@ export function AutoFitClampedTitle({
     let animationFrame = 0;
     let cancelled = false;
 
-    function getLineHeight(size: number) {
-      return size * lineHeightRatio;
-    }
-
     function applySize(target: HTMLHeadingElement, size: number) {
+      const typography = getTitleTypography(size);
       target.style.fontSize = `${size}px`;
-      target.style.lineHeight = `${getLineHeight(size)}px`;
+      target.style.lineHeight = `${typography.lineHeight}px`;
+      target.style.letterSpacing = `${typography.letterSpacing}px`;
     }
 
     function fits(size: number) {
+      const typography = getTitleTypography(size);
+
       measuringTitle.style.width = `${title.clientWidth}px`;
       applySize(measuringTitle, size);
-      return measuringTitle.scrollHeight <= getLineHeight(size) * maxLines + 1;
+      return measuringTitle.scrollHeight <= typography.lineHeight * maxLines + 1;
     }
 
     function measure() {
@@ -101,6 +100,8 @@ export function AutoFitClampedTitle({
     };
   }, [children]);
 
+  const typography = getTitleTypography(fontSize);
+
   return (
     <div ref={wrapperRef} className="relative w-full max-w-full">
       <h2
@@ -111,7 +112,8 @@ export function AutoFitClampedTitle({
         )}
         style={{
           fontSize,
-          lineHeight: `${fontSize * lineHeightRatio}px`,
+          lineHeight: `${typography.lineHeight}px`,
+          letterSpacing: `${typography.letterSpacing}px`,
         }}
       >
         {children}
@@ -125,11 +127,23 @@ export function AutoFitClampedTitle({
         )}
         style={{
           fontSize,
-          lineHeight: `${fontSize * lineHeightRatio}px`,
+          lineHeight: `${typography.lineHeight}px`,
+          letterSpacing: `${typography.letterSpacing}px`,
         }}
       >
         {children}
       </h2>
     </div>
   );
+}
+
+function getTitleTypography(fontSize: number) {
+  const shrinkProgress = (maxFontSize - fontSize) / (maxFontSize - minFontSize);
+  const lineHeightRatio = 1.05 + shrinkProgress * 0.2;
+  const letterSpacing = shrinkProgress * 0.55;
+
+  return {
+    lineHeight: fontSize * lineHeightRatio,
+    letterSpacing,
+  };
 }
