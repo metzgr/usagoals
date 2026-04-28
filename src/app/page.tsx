@@ -40,7 +40,7 @@ export default async function HomePage() {
           </h1>
 
           <p className="max-w-[640px] text-[18px] leading-7 text-[#a8afb7] max-[440px]:w-full">
-            Explore the strategic goals set by major federal agencies. Find connections to your priorities. Impact what government achieves for the American people.
+            Explore the strategic goals set by major federal agencies. Find connections to your priorities. Change what government achieves for the American people.
           </p>
 
           <div className="flex flex-wrap justify-center gap-2 max-[440px]:w-full max-[440px]:flex-col">

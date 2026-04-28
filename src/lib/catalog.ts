@@ -45,6 +45,7 @@ export type CatalogItem = {
   summary: string;
   owner: CatalogOwner;
   sourceLabel: string;
+  sourceTitle: string;
   timeLabel: string;
   tags: string[];
   metrics: CatalogMetric[];
@@ -326,6 +327,9 @@ function buildCatalogItems(
   const goalCountByAgency = countBy(overview.goals, (goal) =>
     String(goal.agency_id),
   );
+  const documentMap = new Map(
+    overview.documents.map((document) => [document.id, document]),
+  );
 
   for (const agency of overview.agencies) {
     const owner = ownerMap.get(String(agency.id));
@@ -342,6 +346,7 @@ function buildCatalogItems(
         summary: `${formatCount(goalCountByAgency.get(owner.id) ?? owner.count)} goals`,
         owner,
         sourceLabel: "Owner",
+        sourceTitle: owner.name,
         timeLabel: agency.is_cfo_act_agency ? "CFO Act" : "Agency",
         tags: agency.is_cfo_act_agency ? ["CFO Act"] : [],
         metrics: [
@@ -378,6 +383,7 @@ function buildCatalogItems(
         ),
         owner,
         sourceLabel: "Plan",
+        sourceTitle: displayTitle(compact(document.title, "Untitled plan")),
         timeLabel: Number.isFinite(year) ? String(year) : "Live",
         tags: compactList([document.plan_type, document.document_type]),
         metrics: [
@@ -399,6 +405,11 @@ function buildCatalogItems(
     };
     const measures = goal.objectives.flatMap((objective) => objective.measures);
     const tags = parseTags(goal.tags).slice(0, 3);
+    const sourceDocument = documentMap.get(goal.document_id);
+    const sourceTitle = compact(
+      sourceDocument?.title ?? goal.source,
+      `${owner.abbreviation} strategic plan`,
+    );
 
     items.push(
       withSearchText({
@@ -411,6 +422,7 @@ function buildCatalogItems(
         ),
         owner,
         sourceLabel: "Goal",
+        sourceTitle,
         timeLabel: compact(goal.number, "Live"),
         tags,
         metrics: [
@@ -445,6 +457,7 @@ function buildCatalogItems(
         summary: `${formatCount(theme.goal_count)} goals`,
         owner: crossAgencyOwner,
         sourceLabel: "Theme",
+        sourceTitle: "Cross-agency themes",
         timeLabel: `${formatCount(theme.agencies.length)} owners`,
         tags: theme.agencies.slice(0, 3),
         metrics: [
@@ -483,6 +496,7 @@ function buildIndicatorItem(
     ),
     owner,
     sourceLabel: "Indicator",
+    sourceTitle: displayTitle(compact(goal.source, goal.title)),
     timeLabel: latestYear ? String(latestYear) : "Live",
     tags: compactList([measure.unit, measure.trend, ...inheritedTags]).slice(0, 3),
     metrics: [
@@ -502,6 +516,7 @@ function withSearchText(item: Omit<CatalogItem, "searchText">): CatalogItem {
       item.owner.name,
       item.owner.abbreviation,
       item.sourceLabel,
+      item.sourceTitle,
       item.timeLabel,
       ...item.tags,
       ...item.metrics.flatMap((metric) => [metric.label, metric.value]),
