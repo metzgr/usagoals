@@ -8,6 +8,7 @@ import { ArrowLeft, Share2 } from "lucide-react";
 
 import { DownloadDataButton } from "@/components/site/download-data-button";
 import { ExploreHeaderSearch } from "@/components/site/explore-header-search";
+import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -66,27 +67,28 @@ function GoalHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 h-16 border-b border-white/10 bg-[#18181b]/95 backdrop-blur">
+    <header className="dark sticky top-0 z-50 h-16 border-b bg-background/95 text-foreground backdrop-blur">
       <div className="flex h-full items-center justify-between px-4">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => router.back()}
-          className="inline-flex items-center gap-2 rounded-full px-2 py-1.5 text-sm font-medium text-[#dadee4] transition hover:text-white"
         >
-          <ArrowLeft className="size-4" />
+          <ArrowLeft data-icon="inline-start" />
           Back
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="lg"
           onClick={() => void sharePage()}
-          className="inline-flex items-center gap-3 text-xs font-medium uppercase tracking-[0.14em] text-[#dadee4] transition hover:text-white"
+          className="rounded-full text-xs uppercase tracking-[0.14em]"
         >
           Share
-          <span className="inline-flex size-10 items-center justify-center rounded-full bg-white text-[#18181b]">
-            <Share2 className="size-4" />
-          </span>
-        </button>
+          <Share2 data-icon="inline-end" />
+        </Button>
       </div>
     </header>
   );

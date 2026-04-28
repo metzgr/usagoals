@@ -19,6 +19,13 @@ import type {
   GoalNetworkNode,
   GoalRelationshipModel,
 } from "@/lib/goal-relationships";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { cn } from "@/lib/utils";
 
 const chartWidth = 1000;
 const chartHeight = 560;
@@ -34,28 +41,36 @@ type SimLink = Omit<GoalNetworkEdge, "source" | "target"> &
     target: string | SimNode;
   };
 
-export function GoalNetworkMap({ model }: { model: GoalRelationshipModel }) {
+export function GoalNetworkMap({
+  model,
+  className,
+}: {
+  model: GoalRelationshipModel;
+  className?: string;
+}) {
   const [activeNodeId, setActiveNodeId] = useState<string | null>(null);
   const graph = useMemo(() => getForceGraph(model), [model]);
 
   if (model.relatedGoals.length === 0) {
     return (
-      <div className="flex h-full min-h-[420px] items-center justify-center rounded-2xl bg-[#27272a] p-8 text-center">
-        <p className="max-w-64 text-sm leading-6 text-[#a8afb7]">
-          No related goals are available for this goal yet.
-        </p>
-      </div>
+      <Empty className={cn("h-full min-h-[420px] border-0", className)}>
+        <EmptyHeader>
+          <EmptyTitle>No related goals yet</EmptyTitle>
+          <EmptyDescription>
+            Connections will appear when semantic relationships are available.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 
   return (
-    <div className="relative h-full min-h-[420px] overflow-hidden rounded-2xl bg-[#27272a]">
-      <div className="absolute left-6 top-6 z-10">
-        <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#a8afb7]/70">
-          {getNetworkLabel(model.source)}
-        </p>
-      </div>
-
+    <div
+      className={cn(
+        "relative h-full min-h-[420px] overflow-hidden bg-muted/30",
+        className,
+      )}
+    >
       <svg
         viewBox={`0 0 ${chartWidth} ${chartHeight}`}
         role="img"
@@ -63,10 +78,10 @@ export function GoalNetworkMap({ model }: { model: GoalRelationshipModel }) {
         className="size-full"
       >
         <defs>
-          <radialGradient id="goal-network-core" cx="50%" cy="48%" r="58%">
-            <stop offset="0%" stopColor="#59A9FF" stopOpacity="0.2" />
-            <stop offset="54%" stopColor="#dadee4" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#27272a" stopOpacity="0" />
+          <radialGradient id="goal-network-core" cx="50%" cy="48%" r="62%">
+            <stop offset="0%" stopColor="#59A9FF" stopOpacity="0.18" />
+            <stop offset="58%" stopColor="#EDE7DD" stopOpacity="0.045" />
+            <stop offset="100%" stopColor="#18181b" stopOpacity="0" />
           </radialGradient>
           <filter id="goal-network-glow" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="9" result="blur" />
@@ -77,18 +92,18 @@ export function GoalNetworkMap({ model }: { model: GoalRelationshipModel }) {
           </filter>
         </defs>
 
-        <rect width={chartWidth} height={chartHeight} fill="#27272a" />
+        <rect width={chartWidth} height={chartHeight} fill="#1f1f22" />
         <rect width={chartWidth} height={chartHeight} fill="url(#goal-network-core)" />
 
-        <g opacity="0.16">
-          {Array.from({ length: 7 }).map((_, index) => (
+        <g opacity="0.13">
+          {Array.from({ length: 6 }).map((_, index) => (
             <circle
               key={index}
               cx={chartWidth / 2}
               cy={chartHeight / 2}
-              r={72 + index * 42}
+              r={84 + index * 46}
               fill="none"
-              stroke="#dadee4"
+              stroke="#EDE7DD"
               strokeWidth="1"
             />
           ))}
@@ -107,7 +122,7 @@ export function GoalNetworkMap({ model }: { model: GoalRelationshipModel }) {
                 y1={source.y}
                 x2={target.x}
                 y2={target.y}
-                stroke={edge.type === "shared_priority" ? "#59A9FF" : "#dadee4"}
+                stroke={edge.type === "shared_priority" ? "#59A9FF" : "#EDE7DD"}
                 strokeDasharray={edge.type === "semantic_similarity" ? "8 10" : undefined}
                 strokeLinecap="round"
                 strokeOpacity={active ? 0.38 + edge.strength * 0.34 : 0.08}
@@ -123,16 +138,12 @@ export function GoalNetworkMap({ model }: { model: GoalRelationshipModel }) {
               key={node.id}
               node={node}
               active={isNodeActive(node, activeNodeId)}
+              focused={activeNodeId === node.id}
               onActiveNodeChange={setActiveNodeId}
             />
           ))}
         </g>
       </svg>
-
-      <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between gap-4 text-[11px] font-medium uppercase tracking-[0.12em] text-[#a8afb7]/70">
-        <span>Force layout · edge width = strength</span>
-        <span>{model.relatedGoals.length} connections</span>
-      </div>
     </div>
   );
 }
@@ -140,13 +151,16 @@ export function GoalNetworkMap({ model }: { model: GoalRelationshipModel }) {
 function GoalGraphNode({
   node,
   active,
+  focused,
   onActiveNodeChange,
 }: {
   node: SimNode;
   active: boolean;
+  focused: boolean;
   onActiveNodeChange: (nodeId: string | null) => void;
 }) {
   const isSeed = node.role === "seed";
+  const showLabel = isSeed || focused;
   const nodeX = node.x ?? chartWidth / 2;
   const nodeY = node.y ?? chartHeight / 2;
   const labelOffset = nodeY < chartHeight / 2 ? -20 : 30;
@@ -176,7 +190,7 @@ function GoalGraphNode({
           cy={nodeY}
           r={node.radius}
           fill={isSeed ? "#18181b" : "#343538"}
-          stroke={isSeed ? "#59A9FF" : "#dadee4"}
+          stroke={isSeed ? "#59A9FF" : "#EDE7DD"}
           strokeOpacity={isSeed ? 0.72 : 0.28 + node.strength * 0.4}
           strokeWidth={isSeed ? 2.5 : 1.5}
         />
@@ -184,31 +198,33 @@ function GoalGraphNode({
           x={nodeX}
           y={nodeY + 4}
           textAnchor="middle"
-          className="fill-[#18181b] text-[11px] font-medium"
+          className="text-[11px] font-medium"
         >
           <tspan
-            className={isSeed ? "fill-white" : "fill-[#dadee4]"}
+            className={isSeed ? "fill-white" : "fill-[#EDE7DD]"}
           >
             {node.agencyAbbreviation}
           </tspan>
         </text>
-        <text
-          x={nodeX}
-          y={nodeY + labelOffset}
-          textAnchor="middle"
-          className={isSeed ? "fill-white text-[17px] font-medium" : "fill-[#dadee4] text-[12px] font-medium"}
-        >
-          <tspan x={nodeX}>{truncateLabel(node.label, isSeed ? 34 : 26)}</tspan>
-          {!isSeed ? (
-            <tspan
-              x={nodeX}
-              dy="16"
-              className="fill-[#a8afb7] text-[10px]"
-            >
-              {Math.round(node.strength * 100)}%
-            </tspan>
-          ) : null}
-        </text>
+        {showLabel ? (
+          <text
+            x={nodeX}
+            y={nodeY + labelOffset}
+            textAnchor="middle"
+            className={isSeed ? "fill-white text-[17px] font-medium" : "fill-[#EDE7DD] text-[12px] font-medium"}
+          >
+            <tspan x={nodeX}>{truncateLabel(node.label, isSeed ? 34 : 28)}</tspan>
+            {!isSeed ? (
+              <tspan
+                x={nodeX}
+                dy="16"
+                className="fill-[#a8afb7] text-[10px]"
+              >
+                {Math.round(node.strength * 100)}%
+              </tspan>
+            ) : null}
+          </text>
+        ) : null}
       </g>
     </a>
   );
@@ -271,18 +287,6 @@ function isEdgeActive(edge: SimLink, activeNodeId: string | null) {
   const source = edge.source as SimNode;
   const target = edge.target as SimNode;
   return source.id === activeNodeId || target.id === activeNodeId;
-}
-
-function getNetworkLabel(source: GoalRelationshipModel["source"]) {
-  if (source === "semantic-neighbors") {
-    return "Connections";
-  }
-
-  if (source === "semantic-preview") {
-    return "Similarity";
-  }
-
-  return "Connections";
 }
 
 function truncateLabel(value: string, limit: number) {

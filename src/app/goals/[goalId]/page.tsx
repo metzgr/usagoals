@@ -7,15 +7,30 @@ import {
   ExternalLink,
   FileText,
   Gauge,
+  Network,
   Target,
 } from "lucide-react";
 
+import { AgencyAvatar } from "@/components/catalog/agency-avatar";
 import { GoalNetworkMap } from "@/components/goals/goal-network-map";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getDocument, getGoal, type GoalMeasure, type GoalSummary } from "@/lib/apex";
 import {
   getGoalRelationshipModel,
   type GoalRelationshipModel,
+  type RelatedGoal,
 } from "@/lib/goal-relationships";
 import { cn, formatCount, formatTagLabel, formatValue } from "@/lib/utils";
 
@@ -25,6 +40,14 @@ type GoalPageProps = {
   params: Promise<{
     goalId: string;
   }>;
+};
+
+type SourceModel = {
+  title: string;
+  pdfUrl: string | undefined;
+  page: number | null;
+  confidence: string | null;
+  fiscalYear: string;
 };
 
 export async function generateMetadata({
@@ -64,329 +87,405 @@ export default async function GoalPage({ params }: GoalPageProps) {
     getGoalRelationshipModel(goal.id),
   ]);
   const measures = goal.objectives.flatMap((objective) => objective.measures);
-  const sourceTitle = cleanText(
-    document?.title ?? goal.document_title ?? goal.source,
-    "Source document",
-  );
-  const fiscalYear = cleanText(document?.fiscal_year ?? goal.fiscal_year, "");
+  const source: SourceModel = {
+    title: cleanText(
+      document?.title ?? goal.document_title ?? goal.source,
+      "Source document",
+    ),
+    pdfUrl: document?.pdf_url,
+    page: goal.source_page,
+    confidence: goal.source_confidence,
+    fiscalYear: cleanText(document?.fiscal_year ?? goal.fiscal_year, ""),
+  };
+  const owner = {
+    id: String(goal.agency_id),
+    name: cleanText(goal.agency_name, "Unknown agency"),
+    abbreviation: cleanText(goal.agency_abbreviation, "US"),
+    count: 0,
+    cfo: false,
+  };
 
   return (
-    <main className="min-h-screen bg-[#18181b] text-white">
-      <section className="mx-auto grid max-w-[1720px] grid-cols-[360px_minmax(0,1fr)] gap-x-20 px-7 py-8 max-[1120px]:block max-[640px]:px-4">
-        <GoalSidebar
+    <main className="dark min-h-screen bg-background text-foreground">
+      <div className="mx-auto grid max-w-[1680px] grid-cols-[minmax(280px,360px)_minmax(0,1fr)] gap-6 px-4 py-6 sm:px-6 lg:px-8 xl:gap-8 max-[1080px]:block">
+        <GoalRail
           goal={goal}
-          fiscalYear={fiscalYear}
+          owner={owner}
           measureCount={measures.length}
           connectionCount={network.relatedGoals.length}
-          pdfUrl={document?.pdf_url}
+          source={source}
         />
 
-        <div className="min-w-0 pb-24 max-[1120px]:mt-10">
-          <section
-            id="connections"
-            aria-label="Goal connections force-directed chart"
-            className="h-[560px] max-[760px]:h-[500px]"
-          >
-            <GoalNetworkMap model={network} />
-          </section>
+        <div className="flex min-w-0 flex-col gap-6 max-[1080px]:mt-6">
+          <RelationshipCard network={network} />
 
-          <div className="mx-auto mt-16 max-w-[1120px] space-y-16">
-            <ObjectivesList goal={goal} />
-
-            <ConnectionsList network={network} />
-
-            <SourcePanel
-              sourceTitle={sourceTitle}
-              pdfUrl={document?.pdf_url}
-              sourcePage={goal.source_page}
-              sourceConfidence={goal.source_confidence}
-            />
+          <div className="grid grid-cols-[minmax(0,1fr)_360px] gap-6 max-[1180px]:grid-cols-1">
+            <DetailsCard goal={goal} measures={measures} source={source} />
+            <ConnectionsCard relatedGoals={network.relatedGoals} />
           </div>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
 
-function GoalSidebar({
+function GoalRail({
   goal,
-  fiscalYear,
+  owner,
   measureCount,
   connectionCount,
-  pdfUrl,
+  source,
 }: {
   goal: GoalSummary;
-  fiscalYear: string;
+  owner: {
+    id: string;
+    name: string;
+    abbreviation: string;
+    count: number;
+    cfo: boolean;
+  };
   measureCount: number;
   connectionCount: number;
-  pdfUrl: string | undefined;
+  source: SourceModel;
 }) {
   const summary = cleanText(goal.summary ?? goal.description ?? goal.subtitle, "");
 
   return (
-    <aside className="sticky top-24 self-start pr-1 max-[1120px]:static">
-      <div className="max-w-[360px] max-[1120px]:max-w-[680px]">
-        <Badge className="h-6 rounded-full bg-white px-3 text-xs font-medium text-[#18181b] hover:bg-white">
-          <span className="mr-1.5 size-1.5 rounded-full bg-[#18181b]" />
-          Goal
-        </Badge>
+    <aside className="sticky top-24 flex flex-col gap-4 self-start max-[1080px]:static">
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between gap-3">
+            <Badge>
+              <span className="size-1.5 rounded-full bg-current" />
+              Goal
+            </Badge>
+            <AgencyAvatar owner={owner} size="lg" />
+          </div>
+          <CardTitle>
+            <h1 className="mt-4 text-[clamp(2.25rem,4vw,3.75rem)] font-medium leading-[0.96] tracking-[-0.06em]">
+              {cleanText(goal.title, "Untitled goal")}
+            </h1>
+          </CardTitle>
+          <CardDescription className="text-base leading-6">
+            {owner.name}
+          </CardDescription>
+        </CardHeader>
 
-        <h1 className="mt-5 text-[clamp(3.2rem,5vw,5.8rem)] font-medium leading-[0.93] tracking-[-0.055em] text-white">
-          {cleanText(goal.title, "Untitled goal")}
-        </h1>
-
-        <p className="mt-6 text-lg leading-8 text-[#a8afb7]">
-          {cleanText(goal.agency_name, "Unknown agency")}
-        </p>
-
-        {summary ? (
-          <p className="mt-3 line-clamp-4 text-sm leading-6 text-[#a8afb7]/85">
-            {summary}
-          </p>
-        ) : null}
-
-        <div className="mt-6 flex flex-wrap gap-1.5">
-          {fiscalYear ? (
-            <MetricBadge icon={<FileText className="size-3" />}>
-              {formatFiscalYear(fiscalYear)}
-            </MetricBadge>
+        <CardContent className="flex flex-col gap-5">
+          {summary ? (
+            <p className="line-clamp-5 text-sm leading-6 text-muted-foreground">
+              {summary}
+            </p>
           ) : null}
-          <MetricBadge icon={<Target className="size-3" />}>
-            {formatCount(goal.objectives.length)}{" "}
-            {goal.objectives.length === 1 ? "objective" : "objectives"}
-          </MetricBadge>
-          {measureCount > 0 ? (
-            <MetricBadge icon={<Gauge className="size-3" />}>
-              {formatCount(measureCount)}{" "}
-              {measureCount === 1 ? "measure" : "measures"}
+
+          <div className="flex flex-wrap gap-1.5">
+            {source.fiscalYear ? (
+              <MetricBadge icon={<FileText />}>
+                {formatFiscalYear(source.fiscalYear)}
+              </MetricBadge>
+            ) : null}
+            <MetricBadge icon={<Target />}>
+              {formatCount(goal.objectives.length)}{" "}
+              {goal.objectives.length === 1 ? "objective" : "objectives"}
             </MetricBadge>
+            {measureCount > 0 ? (
+              <MetricBadge icon={<Gauge />}>
+                {formatCount(measureCount)}{" "}
+                {measureCount === 1 ? "measure" : "measures"}
+              </MetricBadge>
+            ) : null}
+          </div>
+
+          <Separator />
+
+          <div className="grid gap-2">
+            <Button asChild variant="outline" size="lg" className="justify-start">
+              <Link href="#objectives">
+                <Target data-icon="inline-start" />
+                Objectives
+                <Badge variant="secondary" className="ml-auto">
+                  {formatCount(goal.objectives.length)}
+                </Badge>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="justify-start">
+              <Link href="#connections">
+                <Network data-icon="inline-start" />
+                Connections
+                <Badge variant="secondary" className="ml-auto">
+                  {formatCount(connectionCount)}
+                </Badge>
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+
+        <CardFooter className="justify-between gap-3">
+          {source.pdfUrl ? (
+            <Button asChild size="sm" className="rounded-full">
+              <a href={source.pdfUrl} target="_blank" rel="noreferrer">
+                <BookOpen data-icon="inline-start" />
+                Source PDF
+              </a>
+            </Button>
+          ) : (
+            <Button size="sm" disabled className="rounded-full">
+              <BookOpen data-icon="inline-start" />
+              Source PDF
+            </Button>
+          )}
+          {source.page ? (
+            <span className="text-xs text-muted-foreground">Page {source.page}</span>
           ) : null}
-        </div>
-
-        {pdfUrl ? (
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-9 inline-flex h-12 items-center gap-2 rounded-md border border-[#dadee4]/60 px-4 text-sm font-medium text-[#dadee4] transition hover:border-white hover:text-white"
-          >
-            <BookOpen className="size-4" />
-            Source PDF
-            <ExternalLink className="size-3.5" />
-          </a>
-        ) : null}
-
-        <nav className="mt-12 grid gap-3" aria-label="Goal profile sections">
-          <SidebarAnchor href="#objectives" label="Objectives" count={goal.objectives.length} />
-          <SidebarAnchor href="#connections" label="Connections" count={connectionCount} />
-        </nav>
-      </div>
+        </CardFooter>
+      </Card>
     </aside>
   );
 }
 
-function SidebarAnchor({
-  href,
-  label,
-  count,
+function RelationshipCard({ network }: { network: GoalRelationshipModel }) {
+  return (
+    <Card id="connections" className="scroll-mt-24">
+      <CardHeader>
+        <CardTitle>Relationship map</CardTitle>
+        <CardDescription>
+          A focused ego network of goals that share priorities, language, or semantic proximity.
+        </CardDescription>
+        <CardAction>
+          <Badge variant="secondary">{formatCount(network.relatedGoals.length)} connections</Badge>
+        </CardAction>
+      </CardHeader>
+      <CardContent className="h-[520px] p-0 max-[760px]:h-[440px]">
+        <GoalNetworkMap model={network} />
+      </CardContent>
+      <CardFooter className="justify-between gap-4 text-xs text-muted-foreground">
+        <span>Force layout</span>
+        <span>Edge width indicates relative strength</span>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function DetailsCard({
+  goal,
+  measures,
+  source,
 }: {
-  href: string;
-  label: string;
-  count: number;
+  goal: GoalSummary;
+  measures: GoalMeasure[];
+  source: SourceModel;
 }) {
   return (
-    <Link
-      href={href}
-      className="flex h-[58px] items-center justify-between rounded-md border border-white/12 bg-[#18181b] px-4 text-base font-medium text-[#dadee4] transition hover:border-white/24 hover:bg-[#27272a]"
-    >
-      <span>{label}</span>
-      <span className="inline-flex size-8 items-center justify-center rounded-full bg-[#343538] text-sm text-[#a8afb7]">
-        {formatCount(count)}
-      </span>
-    </Link>
+    <Tabs defaultValue="objectives">
+      <Card id="objectives" className="scroll-mt-24">
+        <CardHeader>
+          <CardTitle>Goal detail</CardTitle>
+          <CardDescription>
+            Objectives, measures, and source evidence from the strategic plan.
+          </CardDescription>
+          <CardAction>
+            <TabsList variant="line">
+              <TabsTrigger value="objectives">Objectives</TabsTrigger>
+              <TabsTrigger value="measures">Measures</TabsTrigger>
+              <TabsTrigger value="source">Source</TabsTrigger>
+            </TabsList>
+          </CardAction>
+        </CardHeader>
+
+        <CardContent>
+          <TabsContent value="objectives" className="mt-0">
+            <ObjectiveStack objectives={goal.objectives} />
+          </TabsContent>
+          <TabsContent value="measures" className="mt-0">
+            <MeasureStack measures={measures} />
+          </TabsContent>
+          <TabsContent value="source" className="mt-0">
+            <SourceDetail source={source} />
+          </TabsContent>
+        </CardContent>
+      </Card>
+    </Tabs>
   );
 }
 
-function ObjectivesList({ goal }: { goal: GoalSummary }) {
+function ObjectiveStack({ objectives }: { objectives: GoalSummary["objectives"] }) {
   return (
-    <section id="objectives" className="scroll-mt-24">
-      <SectionHeading
-        title="Objectives"
-        description="The goal structure captured from the source plan."
-      />
-
-      <ol className="mt-7 grid gap-3">
-        {goal.objectives.map((objective, index) => (
-          <li key={objective.id} className="rounded-xl bg-[#27272a] p-5">
-            <div className="flex items-center justify-between gap-3 text-xs text-[#a8afb7]">
-              <span>
-                Objective {cleanText(objective.number, String(index + 1))}
-              </span>
-              {objective.source_page ? <span>Page {objective.source_page}</span> : null}
-            </div>
-
-            <h3 className="mt-4 max-w-[820px] text-xl font-medium leading-snug tracking-[-0.02em] text-white">
-              {cleanText(objective.title, "Untitled objective")}
-            </h3>
-
-            {objective.description ? (
-              <p className="mt-3 max-w-[820px] text-sm leading-6 text-[#a8afb7]">
-                {objective.description}
+    <ol className="flex flex-col gap-3">
+      {objectives.map((objective, index) => (
+        <li key={objective.id}>
+          <Card size="sm" className="bg-muted/40">
+            <CardHeader>
+              <CardTitle>
+                <span className="text-sm text-muted-foreground">
+                  Objective {cleanText(objective.number, String(index + 1))}
+                </span>
+              </CardTitle>
+              {objective.source_page ? (
+                <CardAction>
+                  <Badge variant="outline">Page {objective.source_page}</Badge>
+                </CardAction>
+              ) : null}
+            </CardHeader>
+            <CardContent>
+              <p className="max-w-[900px] text-base leading-6">
+                {cleanText(objective.title, "Untitled objective")}
               </p>
-            ) : null}
-
-            <MeasureList measures={objective.measures} />
-          </li>
-        ))}
-      </ol>
-    </section>
+              {objective.description ? (
+                <p className="mt-3 line-clamp-3 text-sm leading-6 text-muted-foreground">
+                  {objective.description}
+                </p>
+              ) : null}
+              {objective.measures.length > 0 ? (
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  <MetricBadge icon={<Gauge />}>
+                    {formatCount(objective.measures.length)}{" "}
+                    {objective.measures.length === 1 ? "measure" : "measures"}
+                  </MetricBadge>
+                </div>
+              ) : null}
+            </CardContent>
+          </Card>
+        </li>
+      ))}
+    </ol>
   );
 }
 
-function ConnectionsList({ network }: { network: GoalRelationshipModel }) {
-  if (network.relatedGoals.length === 0) {
-    return null;
+function MeasureStack({ measures }: { measures: GoalMeasure[] }) {
+  if (measures.length === 0) {
+    return (
+      <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+        No measures are available for this goal yet.
+      </div>
+    );
   }
 
   return (
-    <section className="scroll-mt-24">
-      <SectionHeading
-        title="Connections"
-        description="Related goals ranked by shared priority and semantic proximity."
-      />
-
-      <div className="mt-7 grid grid-cols-2 gap-3 max-[760px]:grid-cols-1">
-        {network.relatedGoals.map((relatedGoal) => (
-          <Link
-            key={relatedGoal.goalId}
-            href={`/goals/${relatedGoal.goalId}`}
-            className="group rounded-xl bg-[#27272a] p-5 transition hover:bg-[#303136]"
-          >
-            <div className="flex items-start justify-between gap-5">
-              <div className="min-w-0">
-                <p className="truncate text-xs text-[#a8afb7]">
-                  {relatedGoal.agencyName}
-                </p>
-                <h3 className="mt-3 line-clamp-3 text-lg font-medium leading-snug tracking-[-0.02em] text-white">
-                  {relatedGoal.title}
-                </h3>
-              </div>
-              <span className="inline-flex h-8 shrink-0 items-center rounded-full bg-[#343538] px-2.5 text-xs font-medium text-[#59A9FF]">
-                {Math.round(relatedGoal.strength * 100)}%
-              </span>
-            </div>
-
-            {relatedGoal.reasons.length > 0 ? (
-              <div className="mt-5 flex flex-wrap gap-1.5">
-                {relatedGoal.reasons.slice(0, 2).map((reason) => (
-                  <span
-                    key={reason}
-                    className="max-w-full truncate rounded-full bg-[#343538] px-2.5 py-1 text-xs font-medium text-[#a8afb7]/80"
-                  >
-                    {reason}
-                  </span>
-                ))}
-              </div>
+    <div className="grid gap-3">
+      {measures.map((measure) => (
+        <Card key={measure.id} size="sm" className="bg-muted/40">
+          <CardHeader>
+            <CardTitle className="line-clamp-2">{measure.name}</CardTitle>
+            {measure.trend ? (
+              <CardAction>
+                <Badge variant="secondary">{formatTagLabel(measure.trend)}</Badge>
+              </CardAction>
             ) : null}
-          </Link>
-        ))}
-      </div>
-    </section>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-2 max-[720px]:grid-cols-1">
+              <MeasureValue label="Baseline" value={measure.baseline_value} year={measure.baseline_year} />
+              <MeasureValue label="Target" value={measure.target_value} year={measure.target_year} />
+              <MeasureValue label="Actual" value={measure.actual_value} year={measure.actual_year} />
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
 
-function SourcePanel({
-  sourceTitle,
-  pdfUrl,
-  sourcePage,
-  sourceConfidence,
+function MeasureValue({
+  label,
+  value,
+  year,
 }: {
-  sourceTitle: string;
-  pdfUrl: string | undefined;
-  sourcePage: number | null;
-  sourceConfidence: string | null;
+  label: string;
+  value: string | null;
+  year: string | null;
 }) {
   return (
-    <section className="rounded-xl bg-[#27272a] p-5">
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <div className="mb-3 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-[#a8afb7]/70">
-            <BookOpen className="size-3.5" />
-            Source
-          </div>
-          <h2 className="line-clamp-2 text-lg font-medium leading-snug text-white">
-            {sourceTitle}
-          </h2>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {sourcePage ? <MetricBadge>Page {sourcePage}</MetricBadge> : null}
-            {sourceConfidence ? (
-              <MetricBadge>{formatTagLabel(sourceConfidence)}</MetricBadge>
-            ) : null}
-          </div>
-        </div>
-        {pdfUrl ? (
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full bg-[#343538] px-4 text-sm font-medium text-[#dadee4] transition hover:bg-[#3f4043]"
-          >
-            PDF
-            <ExternalLink className="size-3.5" />
-          </a>
+    <div className="rounded-md bg-background/55 p-3">
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="mt-1 truncate text-sm">{formatMeasureValue(value, year)}</p>
+    </div>
+  );
+}
+
+function SourceDetail({ source }: { source: SourceModel }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          Source document
+        </p>
+        <h2 className="mt-2 max-w-[820px] text-xl font-medium leading-snug">
+          {source.title}
+        </h2>
+      </div>
+
+      <div className="flex flex-wrap gap-1.5">
+        {source.fiscalYear ? (
+          <MetricBadge icon={<FileText />}>
+            {formatFiscalYear(source.fiscalYear)}
+          </MetricBadge>
+        ) : null}
+        {source.page ? <MetricBadge>Page {source.page}</MetricBadge> : null}
+        {source.confidence ? (
+          <MetricBadge>{formatTagLabel(source.confidence)} confidence</MetricBadge>
         ) : null}
       </div>
-    </section>
-  );
-}
 
-function MeasureList({ measures }: { measures: GoalMeasure[] }) {
-  if (measures.length === 0) {
-    return null;
-  }
-
-  return (
-    <div className="mt-5 space-y-2">
-      <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#a8afb7]/70">
-        Measures
-      </p>
-      {measures.slice(0, 4).map((measure) => (
-        <div
-          key={measure.id}
-          className="rounded-md bg-[#343538] px-3 py-2 text-sm text-[#dadee4]"
-        >
-          <p className="line-clamp-2 leading-snug">{measure.name}</p>
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[#a8afb7]">
-            <span>Target: {formatMeasureValue(measure.target_value, measure.target_year)}</span>
-            <span>Actual: {formatMeasureValue(measure.actual_value, measure.actual_year)}</span>
-          </div>
-        </div>
-      ))}
-      {measures.length > 4 ? (
-        <p className="text-xs text-[#a8afb7]">
-          +{formatCount(measures.length - 4)} more
-        </p>
+      {source.pdfUrl ? (
+        <Button asChild variant="outline" className="w-fit">
+          <a href={source.pdfUrl} target="_blank" rel="noreferrer">
+            Open PDF
+            <ExternalLink data-icon="inline-end" />
+          </a>
+        </Button>
       ) : null}
     </div>
   );
 }
 
-function SectionHeading({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+function ConnectionsCard({ relatedGoals }: { relatedGoals: RelatedGoal[] }) {
   return (
-    <div className="text-center">
-      <h2 className="text-[clamp(2.6rem,4vw,4.2rem)] font-medium leading-none tracking-[-0.055em] text-white">
-        {title}
-      </h2>
-      <p className="mx-auto mt-3 max-w-[520px] text-sm leading-6 text-[#a8afb7]">
-        {description}
-      </p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Closest goals</CardTitle>
+        <CardDescription>Ranked relationship signals.</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-2">
+        {relatedGoals.length > 0 ? (
+          relatedGoals.slice(0, 7).map((relatedGoal) => (
+            <ConnectionLink key={relatedGoal.goalId} relatedGoal={relatedGoal} />
+          ))
+        ) : (
+          <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
+            No connections yet.
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ConnectionLink({ relatedGoal }: { relatedGoal: RelatedGoal }) {
+  return (
+    <Button
+      asChild
+      variant="ghost"
+      className="h-auto justify-start rounded-lg p-3 text-left"
+    >
+      <Link href={`/goals/${relatedGoal.goalId}`}>
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <span className="truncate text-xs text-muted-foreground">
+            {relatedGoal.agencyName}
+          </span>
+          <span className="line-clamp-2 whitespace-normal text-sm font-medium leading-snug">
+            {relatedGoal.title}
+          </span>
+          {relatedGoal.reasons[0] ? (
+            <span className="truncate text-xs text-muted-foreground">
+              {relatedGoal.reasons[0]}
+            </span>
+          ) : null}
+        </span>
+        <Badge variant="secondary" className="ml-auto shrink-0">
+          {Math.round(relatedGoal.strength * 100)}%
+        </Badge>
+      </Link>
+    </Button>
   );
 }
 
@@ -402,10 +501,7 @@ function MetricBadge({
   return (
     <Badge
       variant="secondary"
-      className={cn(
-        "h-8 rounded-full border-0 bg-[#343538] px-3 text-xs font-medium text-[#a8afb7]/80",
-        className,
-      )}
+      className={cn("gap-1.5 rounded-full", className)}
     >
       {icon}
       {children}
