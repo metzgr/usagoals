@@ -37,7 +37,7 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
             <span className="truncate">{item.owner.name}</span>
           </div>
 
-          <h2 className="line-clamp-3 max-w-full text-[clamp(1rem,1.1vw,1.25rem)] font-normal leading-tight tracking-normal text-white">
+          <h2 className="line-clamp-3 max-w-full font-serif text-[40px] font-normal uppercase leading-[0.95] tracking-normal text-white">
             {item.title}
           </h2>
         </div>
