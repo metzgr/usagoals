@@ -98,8 +98,8 @@ export const getGoalUniverseGraph = cache(async () => {
         "US";
       const agencyAngle = agencyAngles.get(goal.agency_id) ?? 0;
       const seed = stableUnit(goalNodeId);
-      const spread = 58 + seed * 82;
-      const angle = agencyAngle + (stableUnit(`${goalNodeId}:angle`) - 0.5) * 0.78;
+      const spread = 50 + seed * 74;
+      const angle = agencyAngle + (stableUnit(`${goalNodeId}:angle`) - 0.5) * 0.9;
 
       return {
         id: goalNodeId,
@@ -108,7 +108,7 @@ export const getGoalUniverseGraph = cache(async () => {
         agencyAbbreviation,
         connectionCount,
         agencyAngle,
-        radius: 2.2 + Math.min(connectionCount, 9) * 0.18,
+        radius: 3.1 + Math.min(Math.sqrt(connectionCount), 3.9) * 1.12,
         x: chartWidth / 2 + Math.cos(angle) * spread,
         y: chartHeight / 2 + Math.sin(angle) * spread * 0.66,
       };
@@ -121,18 +121,18 @@ export const getGoalUniverseGraph = cache(async () => {
       "link",
       forceLink<LayoutNode, LayoutEdge>(layoutEdges)
         .id((node) => node.id)
-        .distance((edge) => 48 - edge.strength * 13)
-        .strength((edge) => 0.16 + edge.strength * 0.34),
+        .distance((edge) => 38 - edge.strength * 9)
+        .strength((edge) => 0.2 + edge.strength * 0.42),
     )
     .force(
       "charge",
-      forceManyBody<LayoutNode>().strength((node) => -18 - node.connectionCount * 2.4),
+      forceManyBody<LayoutNode>().strength((node) => -12 - node.connectionCount * 1.65),
     )
     .force(
       "collide",
       forceCollide<LayoutNode>()
-        .radius((node) => node.radius + 4.6)
-        .iterations(2),
+        .radius((node) => node.radius * 0.82 + 1.4)
+        .iterations(1),
     )
     .force("center", forceCenter(chartWidth / 2, chartHeight / 2))
     .force(

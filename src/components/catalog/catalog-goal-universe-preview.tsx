@@ -1,6 +1,8 @@
 import type { GoalUniverseGraph } from "@/lib/goal-universe";
 
 const highlightColor = "#EDE7DD";
+const cardSurfaceColor = "#27272a";
+const cardBackgroundColor = "#18181b";
 
 export function CatalogGoalUniversePreview({
   graph,
@@ -32,8 +34,8 @@ export function CatalogGoalUniversePreview({
           stroke="#EDE7DD"
           strokeLinecap="round"
           strokeLinejoin="round"
-          strokeOpacity="0.055"
-          strokeWidth="0.78"
+          strokeOpacity="0.07"
+          strokeWidth="0.85"
           vectorEffect="non-scaling-stroke"
         />
 
@@ -46,8 +48,8 @@ export function CatalogGoalUniversePreview({
             y2={edge.y2}
             stroke={highlightColor}
             strokeLinecap="round"
-            strokeOpacity={0.38 + edge.strength * 0.45}
-            strokeWidth={1.1 + edge.strength * 1.45}
+            strokeOpacity={0.34 + edge.strength * 0.44}
+            strokeWidth={1.25 + edge.strength * 1.55}
             vectorEffect="non-scaling-stroke"
           />
         ))}
@@ -57,14 +59,26 @@ export function CatalogGoalUniversePreview({
             const highlighted = highlightedGoalIds.has(node.goalId);
 
             return (
-              <circle
-                key={node.id}
-                cx={node.x}
-                cy={node.y}
-                r={node.radius}
-                fill={highlighted ? highlightColor : "#EDE7DD"}
-                opacity={highlighted ? 0.72 : 0.28}
-              />
+              <g key={node.id}>
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={node.radius + 0.9}
+                  fill={cardBackgroundColor}
+                  opacity={highlighted ? 0.62 : 0.5}
+                />
+                <circle
+                  cx={node.x}
+                  cy={node.y}
+                  r={node.radius}
+                  fill={highlighted ? highlightColor : cardSurfaceColor}
+                  fillOpacity={highlighted ? 0.58 : 0.86}
+                  stroke={highlighted ? cardBackgroundColor : highlightColor}
+                  strokeOpacity={highlighted ? 0.54 : 0.24}
+                  strokeWidth={highlighted ? 1.15 : 0.95}
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
             );
           })}
         </g>
@@ -80,26 +94,30 @@ export function CatalogGoalUniversePreview({
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r={selected ? 9.5 : 6.4}
+                    r={node.radius + (selected ? 6.6 : 3.6)}
                     fill={highlightColor}
-                    opacity={selected ? 0.16 : 0.08}
+                    opacity={selected ? 0.16 : 0.09}
                   />
                   <circle
                     cx={node.x}
                     cy={node.y}
-                    r={selected ? 5.6 : 3.8}
+                    r={node.radius + (selected ? 2.7 : 0.9)}
                     fill={highlightColor}
                     opacity={selected ? 1 : 0.72}
+                    stroke={cardBackgroundColor}
+                    strokeOpacity={selected ? 0.88 : 0.48}
+                    strokeWidth={selected ? 1.4 : 1}
+                    vectorEffect="non-scaling-stroke"
                   />
                   {selected ? (
                     <circle
                       cx={node.x}
                       cy={node.y}
-                      r="12"
+                      r={node.radius + 9.3}
                       fill="none"
                       stroke={highlightColor}
-                      strokeOpacity="0.22"
-                      strokeWidth="1.1"
+                      strokeOpacity="0.28"
+                      strokeWidth="1.25"
                       vectorEffect="non-scaling-stroke"
                     />
                   ) : null}
