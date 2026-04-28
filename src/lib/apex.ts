@@ -62,7 +62,10 @@ export type GoalObjective = {
   title: string;
   description: string | null;
   source_page: number | null;
+  source_text?: string | null;
+  source_highlight_text?: string | null;
   source_heading: string | null;
+  source_match_method?: string | null;
   source_confidence: string | null;
   agency_mentions: AgencyMention[];
   stakeholder_relations: unknown[];
@@ -82,9 +85,17 @@ export type GoalSummary = {
   summary: string | null;
   tags: string | null;
   source_page: number | null;
+  source_text?: string | null;
+  source_highlight_text?: string | null;
   source_heading: string | null;
+  source_match_method?: string | null;
   source_confidence: string | null;
   source: string | null;
+  document_title?: string | null;
+  document_type?: string | null;
+  plan_type?: string | null;
+  fiscal_year?: string | null;
+  publication_year?: number | null;
   summary_citations: SummaryCitation[];
   objectives: GoalObjective[];
   agency_mentions: AgencyMention[];

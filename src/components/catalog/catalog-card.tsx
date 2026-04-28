@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { AgencyAvatar } from "@/components/catalog/agency-avatar";
 import type { CatalogItem } from "@/lib/catalog";
 
@@ -13,13 +15,19 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
   const measuresLabel =
     measuresMetric?.value === "1" ? "measure" : "measures";
   const fiscalYear = getFiscalYearLabel(item.sourceTitle);
+  const goalId = item.id.startsWith("goal:") ? item.id.replace("goal:", "") : "";
+  const href = goalId ? `/goals/${goalId}` : "/explore";
 
   return (
     <article
       id={item.id}
       className="group col-span-3 min-w-0 max-[1024px]:col-span-4 max-[900px]:col-span-3 max-[640px]:col-span-1"
     >
-      <div className="relative flex aspect-[3/4] cursor-pointer flex-col items-start justify-between rounded-lg border-2 border-[#27272a] bg-[#27272a] p-6 text-left transition duration-150 hover:-translate-y-0.5 hover:border-[#343538] max-[640px]:p-5">
+      <Link
+        href={href}
+        aria-label={`View ${item.title}`}
+        className="relative flex aspect-[3/4] cursor-pointer flex-col items-start justify-between rounded-lg border-2 border-[#27272a] bg-[#27272a] p-6 text-left outline-none transition duration-150 hover:-translate-y-0.5 hover:border-[#343538] focus-visible:ring-2 focus-visible:ring-[#59A9FF] max-[640px]:p-5"
+      >
         <div className="absolute right-5 top-5">
           <AgencyAvatar owner={item.owner} size="sm" />
         </div>
@@ -51,28 +59,7 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
             </span>
           ) : null}
         </div>
-
-        <button
-          type="button"
-          aria-label={`Save ${item.title}`}
-          className="absolute bottom-2.5 right-2.5 inline-flex size-9 origin-bottom-right translate-y-0.5 scale-[0.98] items-center justify-center rounded-full bg-[#59A9FF] text-[#18181b] opacity-0 transition duration-150 group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 max-[1024px]:opacity-100"
-        >
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            className="size-4"
-            fill="none"
-          >
-            <path
-              d="M12 6.6c1.8-2.1 5.3-1.3 6.1 1.5.7 2.4-.8 4.4-2.5 5.9L12 17.3 8.4 14c-1.7-1.5-3.2-3.5-2.5-5.9.8-2.8 4.3-3.6 6.1-1.5Z"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1.7"
-            />
-          </svg>
-        </button>
-      </div>
+      </Link>
     </article>
   );
 }
