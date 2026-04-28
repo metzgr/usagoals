@@ -33,7 +33,7 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
           <AgencyAvatar owner={item.owner} size="sm" />
         </div>
 
-        <div className="flex min-w-0 flex-col gap-5 pr-10">
+        <div className="flex min-w-0 flex-col gap-5 pr-7">
           <div className="flex min-w-0 text-xs text-[#a8afb7]">
             <span className="truncate">{item.owner.name}</span>
           </div>
