@@ -1,5 +1,7 @@
 import type { GoalUniverseGraph } from "@/lib/goal-universe";
 
+const highlightColor = "#EDE7DD";
+
 export function CatalogGoalUniversePreview({
   graph,
   goalId,
@@ -42,7 +44,7 @@ export function CatalogGoalUniversePreview({
             y1={edge.y1}
             x2={edge.x2}
             y2={edge.y2}
-            stroke="#FACC15"
+            stroke={highlightColor}
             strokeLinecap="round"
             strokeOpacity={0.38 + edge.strength * 0.45}
             strokeWidth={1.1 + edge.strength * 1.45}
@@ -60,7 +62,7 @@ export function CatalogGoalUniversePreview({
                 cx={node.x}
                 cy={node.y}
                 r={node.radius}
-                fill={highlighted ? "#FACC15" : "#EDE7DD"}
+                fill={highlighted ? highlightColor : "#EDE7DD"}
                 opacity={highlighted ? 0.72 : 0.28}
               />
             );
@@ -79,14 +81,14 @@ export function CatalogGoalUniversePreview({
                     cx={node.x}
                     cy={node.y}
                     r={selected ? 9.5 : 6.4}
-                    fill="#FACC15"
+                    fill={highlightColor}
                     opacity={selected ? 0.16 : 0.08}
                   />
                   <circle
                     cx={node.x}
                     cy={node.y}
                     r={selected ? 5.6 : 3.8}
-                    fill="#FACC15"
+                    fill={highlightColor}
                     opacity={selected ? 1 : 0.72}
                   />
                   {selected ? (
@@ -95,7 +97,7 @@ export function CatalogGoalUniversePreview({
                       cy={node.y}
                       r="12"
                       fill="none"
-                      stroke="#FACC15"
+                      stroke={highlightColor}
                       strokeOpacity="0.22"
                       strokeWidth="1.1"
                       vectorEffect="non-scaling-stroke"
