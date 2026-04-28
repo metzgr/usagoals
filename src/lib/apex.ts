@@ -308,6 +308,35 @@ export const getSemanticEdgeTotal = cache(async () => {
   return response.total ?? 0;
 });
 
+export const listSemanticEdges = cache(async () => {
+  const pageSize = 500;
+  const firstPage = await apexFetch<PaginatedResponse<SemanticEdge>>(
+    `/semantic/edges?limit=${pageSize}&offset=0`,
+  );
+  const total = firstPage.total ?? firstPage.data.length;
+
+  if (firstPage.data.length >= total) {
+    return firstPage.data;
+  }
+
+  const remainingOffsets = Array.from(
+    { length: Math.ceil((total - firstPage.data.length) / pageSize) },
+    (_, index) => firstPage.data.length + index * pageSize,
+  );
+  const remainingPages = await Promise.all(
+    remainingOffsets.map((offset) =>
+      apexFetch<PaginatedResponse<SemanticEdge>>(
+        `/semantic/edges?limit=${pageSize}&offset=${offset}`,
+      ),
+    ),
+  );
+
+  return [
+    ...firstPage.data,
+    ...remainingPages.flatMap((page) => page.data),
+  ];
+});
+
 export const getAgencyProfile = cache(async (agencyId: number) => {
   return apexFetch<AgencyProfile>(`/agencies/${agencyId}/profile`);
 });

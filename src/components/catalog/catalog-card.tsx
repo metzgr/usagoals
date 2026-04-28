@@ -2,9 +2,17 @@ import Link from "next/link";
 
 import { AgencyAvatar } from "@/components/catalog/agency-avatar";
 import { AutoFitClampedTitle } from "@/components/catalog/auto-fit-clamped-title";
+import { CatalogGoalUniversePreview } from "@/components/catalog/catalog-goal-universe-preview";
 import type { CatalogItem } from "@/lib/catalog";
+import type { GoalUniverseGraph } from "@/lib/goal-universe";
 
-export function CatalogCard({ item }: { item: CatalogItem }) {
+export function CatalogCard({
+  item,
+  universeGraph,
+}: {
+  item: CatalogItem;
+  universeGraph?: GoalUniverseGraph;
+}) {
   const objectivesMetric =
     item.metrics.find((metric) => metric.label === "Objectives") ??
     item.metrics[0];
@@ -16,7 +24,9 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
   const measuresLabel =
     measuresMetric?.value === "1" ? "measure" : "measures";
   const fiscalYear = getFiscalYearLabel(item.sourceTitle);
-  const goalId = item.id.startsWith("goal:") ? item.id.replace("goal:", "") : "";
+  const goalId = item.id.startsWith("goal:")
+    ? Number(item.id.replace("goal:", ""))
+    : 0;
   const href = goalId ? `/goals/${goalId}` : "/explore";
 
   return (
@@ -40,6 +50,12 @@ export function CatalogCard({ item }: { item: CatalogItem }) {
 
           <AutoFitClampedTitle>{item.title}</AutoFitClampedTitle>
         </div>
+
+        {goalId && universeGraph ? (
+          <CatalogGoalUniversePreview graph={universeGraph} goalId={goalId} />
+        ) : (
+          <div aria-hidden="true" className="min-h-0 flex-1" />
+        )}
 
         <div className="mt-auto flex max-w-full flex-wrap gap-1.5 p-6 pr-10 max-[640px]:p-5 max-[640px]:pr-10">
           {fiscalYear ? (
