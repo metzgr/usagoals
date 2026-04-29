@@ -88,7 +88,7 @@ function CatalogGoalSummaryPreview({ summary }: { summary: string }) {
   return (
     <div
       data-component="GoalSummaryPreview"
-      className="flex min-h-0 w-full flex-1 items-end p-6 pt-2 max-[640px]:p-5 max-[640px]:pt-2"
+      className="flex min-h-0 w-full flex-1 items-start p-6 pt-2 max-[640px]:p-5 max-[640px]:pt-2"
     >
       <p className="line-clamp-7 text-sm leading-6 text-[#a8afb7]">
         {summary}
