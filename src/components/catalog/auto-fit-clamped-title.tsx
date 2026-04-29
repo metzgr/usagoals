@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-const maxFontSize = 40;
+const maxFontSize = 36;
 const minFontSize = 24;
 const maxLines = 3;
 

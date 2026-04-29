@@ -42,7 +42,7 @@ export function CatalogPreviewModeButton() {
     <Select value={mode} onValueChange={selectMode}>
       <SelectTrigger
         aria-label="Catalog preview mode"
-        className="!h-10 min-w-[150px] cursor-pointer rounded-full border-0 bg-[#343538] py-0 pl-4 pr-3 text-sm font-medium text-[#dadee4] shadow-none hover:bg-[#3f4043] focus-visible:ring-[#59A9FF]/40 [&_svg]:text-[#dadee4]/70"
+        className="!h-10 min-w-[170px] cursor-pointer rounded-lg border-[#3f4043] bg-transparent pl-3 pr-2.5 text-sm font-medium text-[#dadee4] shadow-none hover:bg-[#27272a] focus-visible:ring-[#59A9FF]/40 [&_svg]:text-[#a8afb7]"
       >
         <SelectValue />
       </SelectTrigger>
