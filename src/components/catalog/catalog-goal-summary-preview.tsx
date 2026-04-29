@@ -58,7 +58,7 @@ export function CatalogGoalSummaryPreview({ summary }: { summary: string }) {
     <div
       ref={containerRef}
       data-component="GoalSummaryPreview"
-      className="flex min-h-0 w-full flex-1 items-start overflow-hidden p-6 pt-2 max-[640px]:p-5 max-[640px]:pt-2"
+      className="flex min-h-0 w-full flex-1 items-start overflow-hidden p-6 max-[640px]:p-5 pt-0"
     >
       <p
         ref={textRef}
