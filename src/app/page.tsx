@@ -94,7 +94,7 @@ function GoalMarquee({
       {artwork.map((item) => (
         <span
           key={item.id}
-          className={`relative flex h-[64px] w-[72px] shrink-0 items-center justify-center max-[768px]:h-[48px] max-[768px]:w-[56px] ${item.id === "usa.png" ? "ml-2" : ""}`}
+          className="relative flex h-[64px] w-[72px] shrink-0 items-center justify-center max-[768px]:h-[48px] max-[768px]:w-[56px]"
         >
           <Image
             src={item.src}
