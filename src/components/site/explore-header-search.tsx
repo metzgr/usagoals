@@ -17,7 +17,7 @@ export function ExploreHeaderSearch() {
   return (
     <div
       role="search"
-      className="absolute left-1/2 top-1/2 z-10 w-full max-w-[440px] -translate-x-1/2 -translate-y-1/2 px-4 max-[760px]:top-[calc(100%+0.75rem)]"
+      className="absolute left-1/2 top-1/2 z-10 w-full max-w-[480px] -translate-x-1/2 -translate-y-1/2 px-4 max-[760px]:top-[calc(100%+0.75rem)]"
     >
       <form
         method="get"
@@ -33,8 +33,8 @@ export function ExploreHeaderSearch() {
             name="q"
             type="search"
             defaultValue={currentQuery}
-            placeholder="Search goals"
-            aria-label="Search goals"
+            placeholder="Search"
+            aria-label="Search"
             autoComplete="off"
             className="h-4 min-w-0 flex-1 bg-transparent text-sm leading-4 text-white outline-none placeholder:text-[#a8afb7]"
           />
@@ -43,9 +43,9 @@ export function ExploreHeaderSearch() {
           type="submit"
           variant="secondary"
           size="default"
-          className="size-9 rounded-[4px] bg-[#343538] p-0 text-sm font-medium text-white hover:bg-[#3d3f42]"
+          className="size-9 rounded-[4px] bg-[#343538] p-0 text-xs font-medium uppercase text-white hover:bg-[#3d3f42]"
         >
-          Go
+          GO
         </Button>
       </form>
     </div>

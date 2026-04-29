@@ -8,7 +8,7 @@ export function SiteBanner() {
   const pathname = usePathname();
   const [visible, setVisible] = useState(true);
 
-  if (pathname.startsWith("/goals/")) {
+  if (pathname !== "/") {
     return null;
   }
 
