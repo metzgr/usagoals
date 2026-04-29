@@ -1,7 +1,7 @@
 "use client";
 
 import { Search, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -13,10 +13,6 @@ export function ExploreHeaderSearch() {
   const currentView = searchParams.get("view");
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState(currentQuery);
-
-  useEffect(() => {
-    setQuery(currentQuery);
-  }, [currentQuery]);
 
   if (pathname !== "/explore") {
     return null;
