@@ -90,7 +90,7 @@ function GoalMarquee({
   artwork: Array<{ alt: string; id: string; src: string }>;
 }) {
   return (
-    <InlineHeroMarquee direction="normal" itemGap="gap-4">
+    <InlineHeroMarquee direction="reverse" itemGap="gap-4">
       {artwork.map((item) => (
         <span
           key={item.id}
