@@ -31,16 +31,15 @@ export default async function HomePage() {
       <section className="flex w-full max-w-[1440px] justify-center">
         <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">
           <h1 className="max-w-[1080px] font-serif text-[96px] font-medium leading-none tracking-[-0.008em] max-[768px]:text-[42px]">
-            Track the
-            <AgencyMarquee />
-            <span>Administration’s</span>
+            Track<AgencyMarquee />the
+             <span> Administration’s</span>
             <br />
             goals for the Nation
             <GoalMarquee artwork={goalArtwork} />
           </h1>
 
           <p className="max-w-[640px] text-[18px] leading-7 text-[#a8afb7] max-[440px]:w-full">
-            Explore the strategic goals set by major federal agencies. Find connections to your priorities. Change what government achieves for the American people.
+            Explore the strategic goals set by U.S. federal agencies. Find connections to your priorities. Change what government achieves for the American people.
           </p>
 
           <div className="flex flex-wrap justify-center gap-2 max-[440px]:w-full max-[440px]:flex-col">

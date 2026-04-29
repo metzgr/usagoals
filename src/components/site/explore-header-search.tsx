@@ -1,6 +1,7 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,12 @@ export function ExploreHeaderSearch() {
   const searchParams = useSearchParams();
   const currentQuery = searchParams.get("q") ?? "";
   const currentView = searchParams.get("view");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState(currentQuery);
+
+  useEffect(() => {
+    setQuery(currentQuery);
+  }, [currentQuery]);
 
   if (pathname !== "/explore") {
     return null;
@@ -34,12 +41,27 @@ export function ExploreHeaderSearch() {
             key={currentQuery}
             name="q"
             type="search"
-            defaultValue={currentQuery}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
             placeholder="Search"
             aria-label="Search"
             autoComplete="off"
-            className="h-4 min-w-0 flex-1 bg-transparent text-sm leading-4 text-[#a8afb7] outline-none placeholder:text-[#a8afb7]/70"
+            ref={inputRef}
+            className="h-4 min-w-0 flex-1 appearance-none bg-transparent text-sm leading-4 text-[#a8afb7] outline-none placeholder:text-[#a8afb7]/70 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none"
           />
+          {query ? (
+            <button
+              type="button"
+              aria-label="Clear search"
+              className="-mr-0.5 flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-sm text-[#a8afb7]/70 transition-colors hover:text-[#d4d4d8] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#a8afb7]/50"
+              onClick={() => {
+                setQuery("");
+                inputRef.current?.focus();
+              }}
+            >
+              <X aria-hidden="true" className="size-4" />
+            </button>
+          ) : null}
         </div>
         <Button
           type="submit"
