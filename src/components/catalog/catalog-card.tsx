@@ -4,13 +4,16 @@ import { AgencyAvatar } from "@/components/catalog/agency-avatar";
 import { AutoFitClampedTitle } from "@/components/catalog/auto-fit-clamped-title";
 import { CatalogGoalUniversePreview } from "@/components/catalog/catalog-goal-universe-preview";
 import type { CatalogItem } from "@/lib/catalog";
+import type { CatalogPreviewMode } from "@/lib/catalog-preview";
 import type { GoalUniverseGraph } from "@/lib/goal-universe";
 
 export function CatalogCard({
   item,
+  previewMode = "network",
   universeGraph,
 }: {
   item: CatalogItem;
+  previewMode?: CatalogPreviewMode;
   universeGraph?: GoalUniverseGraph;
 }) {
   const objectivesMetric =
@@ -51,7 +54,9 @@ export function CatalogCard({
           <AutoFitClampedTitle>{item.title}</AutoFitClampedTitle>
         </div>
 
-        {goalId && universeGraph ? (
+        {previewMode === "summary" ? (
+          <CatalogGoalSummaryPreview summary={item.summary} />
+        ) : goalId && universeGraph ? (
           <CatalogGoalUniversePreview graph={universeGraph} goalId={goalId} />
         ) : (
           <div aria-hidden="true" className="min-h-0 flex-1" />
@@ -76,6 +81,19 @@ export function CatalogCard({
         </div>
       </Link>
     </article>
+  );
+}
+
+function CatalogGoalSummaryPreview({ summary }: { summary: string }) {
+  return (
+    <div
+      data-component="GoalSummaryPreview"
+      className="flex min-h-0 w-full flex-1 items-end p-6 pt-2 max-[640px]:p-5 max-[640px]:pt-2"
+    >
+      <p className="line-clamp-7 text-[15px] leading-6 text-[#dadee4]">
+        {summary}
+      </p>
+    </div>
   );
 }
 

@@ -11,6 +11,7 @@ export function ExploreHeaderSearch() {
   const searchParams = useSearchParams();
   const currentQuery = searchParams.get("q") ?? "";
   const currentView = searchParams.get("view");
+  const currentPreview = searchParams.get("preview");
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState(currentQuery);
 
@@ -30,6 +31,9 @@ export function ExploreHeaderSearch() {
       >
         {currentView && currentView !== "newest" ? (
           <input type="hidden" name="view" value={currentView} />
+        ) : null}
+        {currentPreview === "summary" ? (
+          <input type="hidden" name="preview" value={currentPreview} />
         ) : null}
         <div className="flex h-9 min-w-0 flex-1 items-center gap-4 p-[10px]">
           <Search aria-hidden="true" className="size-4 shrink-0 text-[#a8afb7]" />

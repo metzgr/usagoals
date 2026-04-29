@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import { ArrowLeft, Share2 } from "lucide-react";
 
+import { CatalogPreviewModeButton } from "@/components/site/catalog-preview-mode-button";
 import { DownloadDataButton } from "@/components/site/download-data-button";
 import { ExploreHeaderSearch } from "@/components/site/explore-header-search";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,10 @@ export function SiteHeader() {
         </Suspense>
 
         <div className="ml-auto">
-          <DownloadDataButton />
+          {pathname === "/" ? <DownloadDataButton /> : null}
+          <Suspense fallback={null}>
+            <CatalogPreviewModeButton />
+          </Suspense>
         </div>
       </div>
     </header>

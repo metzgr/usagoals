@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { getOverview } from "@/lib/apex";
 import { getGoalCatalogModel } from "@/lib/catalog";
+import { getCatalogPreviewMode } from "@/lib/catalog-preview";
 import { getGoalUniverseGraph } from "@/lib/goal-universe";
 
 export const metadata: Metadata = {
@@ -13,12 +14,14 @@ export const metadata: Metadata = {
 type ExplorePageProps = {
   searchParams: Promise<{
     q?: string;
+    preview?: string;
     view?: string;
   }>;
 };
 
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const params = await searchParams;
+  const previewMode = getCatalogPreviewMode(params.preview);
   const [overview, universeGraph] = await Promise.all([
     getOverview(),
     getGoalUniverseGraph(),
@@ -41,6 +44,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 <CatalogCard
                   key={item.id}
                   item={item}
+                  previewMode={previewMode}
                   universeGraph={universeGraph}
                 />
               ))}
