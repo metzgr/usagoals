@@ -45,7 +45,7 @@ export function ExploreHeaderSearch() {
           type="submit"
           variant="secondary"
           size="default"
-          className="size-[38px] rounded-[4px] bg-[#343538] p-0 text-xs font-medium text-[#a8afb7] hover:bg-[#3d3f42]"
+          className="size-[38px] cursor-pointer rounded-[4px] bg-[#343538] p-0 text-xs font-medium text-[#a8afb7] hover:bg-[#3d3f42]"
         >
           Go
         </Button>
