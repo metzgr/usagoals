@@ -44,10 +44,12 @@ export function CatalogPreviewModeButton() {
     <Select value={mode} onValueChange={selectMode}>
       <SelectTrigger
         aria-label="Catalog preview mode"
-        className="!h-10 min-w-[170px] cursor-pointer gap-1 rounded-lg border-[#3f4043] bg-transparent pl-3 pr-2.5 text-sm font-medium text-[#a8afb7] shadow-none hover:bg-[#27272a] focus-visible:ring-[#59A9FF]/40 *:data-[slot=select-value]:gap-1 [&_svg]:text-[#a8afb7]"
+        className="!h-10 min-w-[170px] cursor-pointer rounded-lg border-[#3f4043] bg-transparent pl-3 pr-2.5 text-sm font-medium text-[#a8afb7] shadow-none hover:bg-[#27272a] focus-visible:ring-[#59A9FF]/40 [&_svg]:text-[#a8afb7]"
       >
-        <PreviewIcon aria-hidden="true" data-icon="inline-start" />
-        <SelectValue />
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <PreviewIcon aria-hidden="true" data-icon="inline-start" />
+          <SelectValue />
+        </span>
       </SelectTrigger>
       <SelectContent
         align="end"
