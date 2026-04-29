@@ -17,7 +17,7 @@ export function ExploreHeaderSearch() {
   return (
     <div
       role="search"
-      className="absolute left-1/2 top-1/2 z-10 w-full max-w-[400px] -translate-x-1/2 -translate-y-1/2 px-4 max-[760px]:top-[calc(100%+0.75rem)]"
+      className="absolute left-1/2 top-1/2 z-10 w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 px-4 max-[760px]:top-[calc(100%+0.75rem)]"
     >
       <form
         method="get"
