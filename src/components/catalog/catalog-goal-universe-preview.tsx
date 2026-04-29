@@ -20,10 +20,10 @@ export function CatalogGoalUniversePreview({
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none min-h-0 w-full flex-1 px-6 pb-4 pt-3 max-[640px]:px-5"
+      className="pointer-events-none min-h-0 w-full flex-1"
       data-component="GoalUniversePreview"
     >
-      <div className="size-full p-3">
+      <div className="size-full">
         <svg
           viewBox={`0 0 ${graph.width} ${graph.height}`}
           className="size-full overflow-visible"
