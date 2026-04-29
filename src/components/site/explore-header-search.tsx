@@ -22,7 +22,7 @@ export function ExploreHeaderSearch() {
       <form
         method="get"
         action="/explore#discovery"
-        className="flex min-h-11 w-full items-center gap-2 rounded-md bg-[#27272a] px-2"
+        className="flex min-h-11 w-full items-center gap-2 rounded-md bg-[#27272a] p-1"
       >
         {currentView && currentView !== "newest" ? (
           <input type="hidden" name="view" value={currentView} />
@@ -40,8 +40,8 @@ export function ExploreHeaderSearch() {
         <Button
           type="submit"
           variant="secondary"
-          size="lg"
-          className="h-9 rounded-md bg-[#343538] px-5 text-sm font-medium text-white hover:bg-[#3d3f42]"
+          size="default"
+          className="size-9 rounded-[4px] bg-[#343538] p-0 text-sm font-medium text-white hover:bg-[#3d3f42]"
         >
           Go
         </Button>
