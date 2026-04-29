@@ -23,7 +23,7 @@ export function ExploreHeaderSearch() {
       <form
         method="get"
         action="/explore#discovery"
-        className="flex h-11 w-full items-center gap-2 rounded-md bg-[#27272a] p-1"
+        className="flex h-11 w-full items-center gap-2 rounded-md bg-[#27272a] py-1 pl-1 pr-0.5"
       >
         {currentView && currentView !== "newest" ? (
           <input type="hidden" name="view" value={currentView} />
