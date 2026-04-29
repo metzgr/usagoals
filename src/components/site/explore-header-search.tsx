@@ -1,5 +1,6 @@
 "use client";
 
+import { Search } from "lucide-react";
 import { usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,8 @@ export function ExploreHeaderSearch() {
         {currentView && currentView !== "newest" ? (
           <input type="hidden" name="view" value={currentView} />
         ) : null}
-        <div className="flex h-9 min-w-0 flex-1 items-center p-[10px]">
+        <div className="flex h-9 min-w-0 flex-1 items-center gap-4 p-[10px]">
+          <Search aria-hidden="true" className="size-4 shrink-0 text-[#a8afb7]" />
           <input
             key={currentQuery}
             name="q"
@@ -36,16 +38,16 @@ export function ExploreHeaderSearch() {
             placeholder="Search"
             aria-label="Search"
             autoComplete="off"
-            className="h-4 min-w-0 flex-1 bg-transparent text-sm leading-4 text-white outline-none placeholder:text-[#a8afb7]"
+            className="h-4 min-w-0 flex-1 bg-transparent text-sm leading-4 text-[#a8afb7] outline-none placeholder:text-[#a8afb7]/70"
           />
         </div>
         <Button
           type="submit"
           variant="secondary"
           size="default"
-          className="size-9 rounded-[4px] bg-[#343538] p-0 text-xs font-medium uppercase text-white hover:bg-[#3d3f42]"
+          className="size-9 rounded-[4px] bg-[#343538] p-0 text-xs font-medium text-[#a8afb7] hover:bg-[#3d3f42]"
         >
-          GO
+          Go
         </Button>
       </form>
     </div>
