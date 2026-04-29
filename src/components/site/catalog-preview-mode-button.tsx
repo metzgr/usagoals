@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Network } from "lucide-react";
+import { FileText, Waypoints } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -18,7 +18,7 @@ export function CatalogPreviewModeButton() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = getCatalogPreviewMode(searchParams.get("preview"));
-  const PreviewIcon = mode === "summary" ? FileText : Network;
+  const PreviewIcon = mode === "summary" ? FileText : Waypoints;
 
   if (pathname !== "/explore") {
     return null;
@@ -44,7 +44,7 @@ export function CatalogPreviewModeButton() {
     <Select value={mode} onValueChange={selectMode}>
       <SelectTrigger
         aria-label="Catalog preview mode"
-        className="!h-10 min-w-[170px] cursor-pointer rounded-lg border-[#3f4043] bg-transparent pl-3 pr-2.5 text-sm font-medium text-[#a8afb7] shadow-none hover:bg-[#27272a] focus-visible:ring-[#59A9FF]/40 [&_svg]:text-[#a8afb7]"
+        className="!h-10 min-w-[170px] cursor-pointer gap-1 rounded-lg border-[#3f4043] bg-transparent pl-3 pr-2.5 text-sm font-medium text-[#a8afb7] shadow-none hover:bg-[#27272a] focus-visible:ring-[#59A9FF]/40 *:data-[slot=select-value]:gap-1 [&_svg]:text-[#a8afb7]"
       >
         <PreviewIcon aria-hidden="true" data-icon="inline-start" />
         <SelectValue />
