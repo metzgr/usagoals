@@ -49,7 +49,7 @@ export function CatalogGoalUniversePreview({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity="0.7"
-                strokeWidth="2.8"
+                strokeWidth="2.1"
                 transform="translate(0 1.15)"
                 vectorEffect="non-scaling-stroke"
               />
@@ -60,7 +60,7 @@ export function CatalogGoalUniversePreview({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity={0.2 + edge.strength * 0.18}
-                strokeWidth="1.9"
+                strokeWidth="1.35"
                 transform="translate(0 -0.35)"
                 vectorEffect="non-scaling-stroke"
               />
@@ -71,7 +71,7 @@ export function CatalogGoalUniversePreview({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeOpacity={0.34 + edge.strength * 0.44}
-                strokeWidth="1.5"
+                strokeWidth="1.1"
                 vectorEffect="non-scaling-stroke"
               />
             </g>
