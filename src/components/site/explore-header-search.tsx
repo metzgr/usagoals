@@ -22,21 +22,23 @@ export function ExploreHeaderSearch() {
       <form
         method="get"
         action="/explore#discovery"
-        className="flex w-full items-center gap-2 rounded-md bg-[#27272a] p-[10px]"
+        className="flex h-11 w-full items-center gap-2 rounded-md bg-[#27272a] p-1"
       >
         {currentView && currentView !== "newest" ? (
           <input type="hidden" name="view" value={currentView} />
         ) : null}
-        <input
-          key={currentQuery}
-          name="q"
-          type="search"
-          defaultValue={currentQuery}
-          placeholder="Search goals"
-          aria-label="Search goals"
-          autoComplete="off"
-          className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#a8afb7]"
-        />
+        <div className="flex h-9 min-w-0 flex-1 items-center p-[10px]">
+          <input
+            key={currentQuery}
+            name="q"
+            type="search"
+            defaultValue={currentQuery}
+            placeholder="Search goals"
+            aria-label="Search goals"
+            autoComplete="off"
+            className="h-4 min-w-0 flex-1 bg-transparent text-sm leading-4 text-white outline-none placeholder:text-[#a8afb7]"
+          />
+        </div>
         <Button
           type="submit"
           variant="secondary"
