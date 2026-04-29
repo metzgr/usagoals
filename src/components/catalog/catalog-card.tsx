@@ -6,6 +6,7 @@ import { CatalogGoalUniversePreview } from "@/components/catalog/catalog-goal-un
 import type { CatalogItem } from "@/lib/catalog";
 import type { CatalogPreviewMode } from "@/lib/catalog-preview";
 import type { GoalUniverseGraph } from "@/lib/goal-universe";
+import { cn } from "@/lib/utils";
 
 export function CatalogCard({
   item,
@@ -46,7 +47,13 @@ export function CatalogCard({
           <AgencyAvatar owner={item.owner} size="sm" />
         </div>
 
-        <div className="flex h-[214px] min-w-0 shrink-0 flex-col gap-5 overflow-hidden p-6 pr-[52px] max-[640px]:h-[206px] max-[640px]:p-5 max-[640px]:pr-[52px]">
+        <div
+          className={cn(
+            "flex min-w-0 shrink-0 flex-col gap-5 overflow-hidden p-6 pr-[52px] max-[640px]:p-5 max-[640px]:pr-[52px]",
+            previewMode === "network" &&
+              "h-[214px] max-[640px]:h-[206px]",
+          )}
+        >
           <div className="flex min-w-0 text-xs text-[#a8afb7]">
             <span className="truncate">{item.owner.name}</span>
           </div>
