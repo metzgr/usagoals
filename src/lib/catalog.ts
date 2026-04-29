@@ -1,9 +1,11 @@
-import type {
-  AgencySummary,
-  DocumentSummary,
-  GoalMeasure,
-  GoalSummary,
-  ThemeSummary,
+import {
+  searchCorpus,
+  type AgencySummary,
+  type DocumentSummary,
+  type GoalMeasure,
+  type GoalSummary,
+  type SearchResult,
+  type ThemeSummary,
 } from "@/lib/apex";
 import { formatCount, formatTagLabel } from "@/lib/utils";
 
@@ -174,21 +176,23 @@ export function getCatalogModel(
   };
 }
 
-export function getGoalCatalogModel(
+export async function getGoalCatalogModel(
   overview: OverviewData,
   params: {
     q?: string;
     view?: string;
   },
-): GoalCatalogModel {
+): Promise<GoalCatalogModel> {
   const state = parseGoalCatalogState(params);
   const owners = buildOwners(overview.agencies);
   const ownerMap = new Map(owners.map((owner) => [owner.id, owner]));
   const goalItems = buildCatalogItems(overview, ownerMap).filter(
     (item) => item.kind === "goal",
   );
-  const searched = filterGoalItemsByQuery(goalItems, state.q);
-  const visibleItems = sortGoalItems(searched, state).slice(0, VISIBLE_LIMIT);
+  const searched = await searchGoalItems(goalItems, state.q);
+  const visibleItems = state.q
+    ? searched.slice(0, VISIBLE_LIMIT)
+    : sortGoalItems(searched, state).slice(0, VISIBLE_LIMIT);
 
   return {
     state,
@@ -243,57 +247,171 @@ function getItemNumericId(item: CatalogItem) {
   return Number(item.id.split(":").at(1)) || 0;
 }
 
-function filterGoalItemsByQuery(items: CatalogItem[], query: string) {
+async function searchGoalItems(items: CatalogItem[], query: string) {
   const tokens = getSearchTokens(query);
 
   if (tokens.length === 0) {
     return items;
   }
 
-  return items.filter((item) => {
-    const searchText = getGoalSearchText(item);
-    return tokens.every((token) => searchText.includes(token));
-  });
+  const apiBoosts = await getGoalSearchBoosts(items, query);
+  const scoredItems = items
+    .map((item) => ({
+      item,
+      score: getGoalSearchScore(item, tokens, query) + (apiBoosts.get(item.id) ?? 0),
+    }))
+    .filter((entry) => entry.score > 0)
+    .sort(
+      (left, right) =>
+        right.score - left.score ||
+        right.item.weight - left.item.weight ||
+        left.item.title.localeCompare(right.item.title),
+    );
+
+  return scoredItems.map((entry) => entry.item);
 }
 
-function getGoalSearchScore(item: CatalogItem, tokens: string[]) {
+async function getGoalSearchBoosts(items: CatalogItem[], query: string) {
+  const boosts = new Map<string, number>();
+
+  try {
+    const response = await searchCorpus({ query, limit: 80 });
+    const titleToItemId = new Map(
+      items.map((item) => [normalizeSearchText(item.title), item.id]),
+    );
+    const itemIds = new Set(items.map((item) => item.id));
+
+    for (const [index, result] of response.results.entries()) {
+      const itemId = getSearchResultGoalItemId(result, titleToItemId, itemIds);
+
+      if (!itemId) {
+        continue;
+      }
+
+      const rankBoost = Math.max(45, 240 - index * 5);
+      boosts.set(itemId, Math.max(boosts.get(itemId) ?? 0, rankBoost));
+    }
+  } catch {
+    return boosts;
+  }
+
+  return boosts;
+}
+
+function getSearchResultGoalItemId(
+  result: SearchResult,
+  titleToItemId: Map<string, string>,
+  itemIds: Set<string>,
+) {
+  if (result.type === "goal") {
+    const goalItemId = `goal:${result.id}`;
+
+    if (itemIds.has(goalItemId)) {
+      return goalItemId;
+    }
+  }
+
+  const parentGoalTitle = normalizeSearchText(result.parent_goal ?? "");
+
+  if (parentGoalTitle) {
+    const parentGoalItemId = titleToItemId.get(parentGoalTitle);
+
+    if (parentGoalItemId) {
+      return parentGoalItemId;
+    }
+  }
+
+  const resultTitle = normalizeSearchText(result.title ?? result.name ?? "");
+
+  if (resultTitle) {
+    return titleToItemId.get(resultTitle) ?? null;
+  }
+
+  return null;
+}
+
+function getGoalSearchScore(item: CatalogItem, tokens: string[], query = "") {
+  const queryText = normalizeSearchText(query);
   const title = normalizeSearchText(item.title);
+  const summary = normalizeSearchText(item.summary);
   const ownerName = normalizeSearchText(item.owner.name);
   const ownerAbbreviation = normalizeSearchText(item.owner.abbreviation);
+  const sourceTitle = normalizeSearchText(item.sourceTitle);
+  const searchText = normalizeSearchText(item.searchText);
+  let matchedTokens = 0;
+  let score = 0;
 
-  return tokens.reduce((score, token) => {
-    if (title === token) {
-      return score + 120;
+  if (queryText) {
+    if (title === queryText) {
+      score += 240;
+    } else if (title.startsWith(queryText)) {
+      score += 175;
+    } else if (title.includes(queryText)) {
+      score += 130;
+    } else if (searchText.includes(queryText)) {
+      score += 80;
     }
+  }
 
-    if (title.startsWith(token)) {
-      return score + 90;
+  for (const token of tokens) {
+    const tokenScore =
+      scoreTokenAgainstField(token, title, 96, 76, 54, 24) +
+      scoreTokenAgainstField(token, ownerAbbreviation, 88, 62, 42, 0) +
+      scoreTokenAgainstField(token, ownerName, 56, 38, 28, 10) +
+      scoreTokenAgainstField(token, sourceTitle, 38, 28, 18, 8) +
+      scoreTokenAgainstField(token, summary, 30, 22, 14, 6) +
+      scoreTokenAgainstField(token, searchText, 18, 12, 8, 4);
+
+    if (tokenScore > 0) {
+      matchedTokens += 1;
+      score += tokenScore;
     }
+  }
 
-    if (ownerAbbreviation === token) {
-      return score + 80;
-    }
+  if (matchedTokens === tokens.length) {
+    score += 70;
+  } else if (matchedTokens > 0) {
+    score += matchedTokens * 10;
+  }
 
-    if (title.includes(token)) {
-      return score + 60;
-    }
-
-    if (ownerName.includes(token)) {
-      return score + 45;
-    }
-
-    if (ownerAbbreviation.includes(token)) {
-      return score + 35;
-    }
-
-    return score;
-  }, 0);
+  return score;
 }
 
-function getGoalSearchText(item: CatalogItem) {
-  return [item.title, item.owner.name, item.owner.abbreviation]
-    .map(normalizeSearchText)
-    .join(" ");
+function scoreTokenAgainstField(
+  token: string,
+  field: string,
+  exactScore: number,
+  prefixScore: number,
+  includesScore: number,
+  softScore: number,
+) {
+  if (!field) {
+    return 0;
+  }
+
+  const words = field.split(/\s+/).filter(Boolean);
+
+  if (words.includes(token) || field === token) {
+    return exactScore;
+  }
+
+  if (words.some((word) => word.startsWith(token)) || field.startsWith(token)) {
+    return prefixScore;
+  }
+
+  if (field.includes(token)) {
+    return includesScore;
+  }
+
+  if (
+    softScore > 0 &&
+    token.length >= 4 &&
+    words.some((word) => word.length >= 4 && word.startsWith(token.slice(0, 4)))
+  ) {
+    return softScore;
+  }
+
+  return 0;
 }
 
 function getSearchTokens(query: string) {

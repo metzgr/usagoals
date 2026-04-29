@@ -4,6 +4,8 @@ import Link from "next/link";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { getOverview } from "@/lib/apex";
 import { getGoalCatalogModel } from "@/lib/catalog";
+import { getCatalogPreviewMode } from "@/lib/catalog-preview";
+import { getGoalUniverseGraph } from "@/lib/goal-universe";
 
 export const metadata: Metadata = {
   title: "Explore",
@@ -12,14 +14,19 @@ export const metadata: Metadata = {
 type ExplorePageProps = {
   searchParams: Promise<{
     q?: string;
+    preview?: string;
     view?: string;
   }>;
 };
 
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const params = await searchParams;
-  const overview = await getOverview();
-  const model = getGoalCatalogModel(overview, params);
+  const previewMode = getCatalogPreviewMode(params.preview);
+  const [overview, universeGraph] = await Promise.all([
+    getOverview(),
+    getGoalUniverseGraph(),
+  ]);
+  const model = await getGoalCatalogModel(overview, params);
 
   return (
     <main className="min-h-screen bg-[#18181b] text-white">
@@ -34,7 +41,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               className="grid grid-cols-12 gap-x-10 gap-y-16 max-[1280px]:gap-x-8 max-[900px]:grid-cols-6 max-[640px]:grid-cols-1"
             >
               {model.visibleItems.map((item) => (
-                <CatalogCard key={item.id} item={item} />
+                <CatalogCard
+                  key={item.id}
+                  item={item}
+                  previewMode={previewMode}
+                  universeGraph={universeGraph}
+                />
               ))}
             </div>
           ) : (

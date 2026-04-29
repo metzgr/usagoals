@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export function SiteBanner() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(true);
+
+  if (pathname !== "/") {
+    return null;
+  }
 
   function dismissBanner() {
     document.documentElement.style.setProperty("--site-banner-height", "0px");
@@ -30,7 +36,7 @@ export function SiteBanner() {
           >
             <circle r="1" cx="1" cy="1" />
           </svg>
-          An AI-driven research project from Performance.gov &nbsp;
+          An AI-driven research project by Ivan Metzger &nbsp;
           <span aria-hidden="true">&rarr;</span>
         </Link>
       </p>

@@ -69,7 +69,7 @@ const copernicusNewCond130 = localFont({
   src: [
     {
       path: "./fonts/Copernicus New Cond/CopernicusNewCond-130.otf",
-      weight: "600",
+      weight: "400",
       style: "normal",
     },
   ],
