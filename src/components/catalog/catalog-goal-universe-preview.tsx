@@ -23,7 +23,7 @@ export function CatalogGoalUniversePreview({
       className="pointer-events-none min-h-0 w-full flex-1"
       data-component="GoalUniversePreview"
     >
-      <div className="size-full">
+      <div className="size-full p-2">
         <svg
           viewBox={`0 0 ${graph.width} ${graph.height}`}
           className="size-full overflow-visible"
