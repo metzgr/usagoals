@@ -1,23 +1,16 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { getCatalogPreviewMode, type CatalogPreviewMode } from "@/lib/catalog-preview";
-
-const previewLabels: Record<CatalogPreviewMode, string> = {
-  network: "Preview network.",
-  summary: "Preview summary.",
-};
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getCatalogPreviewMode } from "@/lib/catalog-preview";
 
 export function CatalogPreviewModeButton() {
   const pathname = usePathname();
@@ -46,35 +39,27 @@ export function CatalogPreviewModeButton() {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="ghost"
-          size="lg"
-          className="h-10 rounded-full bg-[#343538] p-0 text-[#dadee4] hover:bg-[#3f4043] hover:text-[#dadee4]"
-        >
-          <span className="inline-flex h-full items-center rounded-full pl-4 pr-3 text-sm font-medium">
-            {previewLabels[mode]}
-            <ChevronDown data-icon="inline-end" />
-          </span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
+    <Select value={mode} onValueChange={selectMode}>
+      <SelectTrigger
+        aria-label="Catalog preview mode"
+        className="!h-10 min-w-[150px] cursor-pointer rounded-full border-0 bg-[#343538] py-0 pl-4 pr-3 text-sm font-medium text-[#dadee4] shadow-none hover:bg-[#3f4043] focus-visible:ring-[#59A9FF]/40 [&_svg]:text-[#dadee4]/70"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent
         align="end"
+        position="popper"
         className="min-w-[190px] border-[#343538] bg-[#27272a] text-[#dadee4]"
       >
-        <DropdownMenuGroup>
-          <DropdownMenuRadioGroup value={mode} onValueChange={selectMode}>
-            <DropdownMenuRadioItem value="network" className="cursor-pointer">
-              Preview network.
-            </DropdownMenuRadioItem>
-            <DropdownMenuRadioItem value="summary" className="cursor-pointer">
-              Preview summary.
-            </DropdownMenuRadioItem>
-          </DropdownMenuRadioGroup>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <SelectGroup>
+          <SelectItem value="network" className="cursor-pointer">
+            Show network
+          </SelectItem>
+          <SelectItem value="summary" className="cursor-pointer">
+            Show summary
+          </SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }
