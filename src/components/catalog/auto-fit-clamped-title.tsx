@@ -139,7 +139,7 @@ export function AutoFitClampedTitle({
 
 function getTitleTypography(fontSize: number) {
   const shrinkProgress = (maxFontSize - fontSize) / (maxFontSize - minFontSize);
-  const lineHeightRatio = 1.08 + shrinkProgress * 0.17;
+  const lineHeightRatio = 1.05 + shrinkProgress * 0.2;
   const letterSpacing = shrinkProgress * 0.55;
 
   return {
