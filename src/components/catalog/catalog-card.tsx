@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { AgencyAvatar } from "@/components/catalog/agency-avatar";
 import { AutoFitClampedTitle } from "@/components/catalog/auto-fit-clamped-title";
+import { CatalogGoalSummaryPreview } from "@/components/catalog/catalog-goal-summary-preview";
 import { CatalogGoalUniversePreview } from "@/components/catalog/catalog-goal-universe-preview";
 import type { CatalogItem } from "@/lib/catalog";
 import type { CatalogPreviewMode } from "@/lib/catalog-preview";
@@ -88,19 +89,6 @@ export function CatalogCard({
         </div>
       </Link>
     </article>
-  );
-}
-
-function CatalogGoalSummaryPreview({ summary }: { summary: string }) {
-  return (
-    <div
-      data-component="GoalSummaryPreview"
-      className="flex min-h-0 w-full flex-1 items-start p-6 pt-2 max-[640px]:p-5 max-[640px]:pt-2"
-    >
-      <p className="line-clamp-7 text-[13px] leading-[22px] text-[#a8afb7]">
-        {summary}
-      </p>
-    </div>
   );
 }
 
