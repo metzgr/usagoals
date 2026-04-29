@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 const maxFontSize = 40;
-const minFontSize = 28;
+const minFontSize = 24;
 const maxLines = 3;
 
 export function AutoFitClampedTitle({

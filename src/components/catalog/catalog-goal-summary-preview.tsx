@@ -62,7 +62,7 @@ export function CatalogGoalSummaryPreview({ summary }: { summary: string }) {
     >
       <p
         ref={textRef}
-        className="overflow-hidden text-[13px] leading-[22px] text-[#a8afb7] [display:-webkit-box] [-webkit-box-orient:vertical]"
+        className="overflow-hidden text-sm leading-[22px] text-[#a8afb7] [display:-webkit-box] [-webkit-box-orient:vertical]"
         style={{
           WebkitLineClamp: lineCount ?? undefined,
         }}
