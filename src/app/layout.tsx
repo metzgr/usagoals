@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { SiteBanner } from "@/components/site/site-banner";
 import { SiteHeader } from "@/components/site/site-header";
-import { ThemeProvider } from "@/components/theme-provider";
 
 import "./globals.css";
 
@@ -93,19 +93,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
       className={`${neueMontreal.variable} ${copernicusNewCond.variable} ${copernicusNewCond130.variable}`}
     >
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <SiteHeader />
-          {children}
-        </ThemeProvider>
+        <SiteBanner />
+        <SiteHeader />
+        {children}
       </body>
     </html>
   );

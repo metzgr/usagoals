@@ -22,12 +22,12 @@ export function SiteBanner() {
   }
 
   return (
-    <div className="relative isolate flex min-h-11 items-center gap-x-6 overflow-hidden bg-secondary/80 px-6 py-2.5 text-secondary-foreground after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border sm:px-3.5 sm:before:flex-1">
+    <div className="relative isolate flex min-h-11 items-center gap-x-6 overflow-hidden bg-gray-800/50 px-6 py-2.5 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10 sm:px-3.5 sm:before:flex-1">
       <GlowShape className="left-[max(-7rem,calc(50%-52rem))]" />
       <GlowShape className="left-[max(45rem,calc(50%+8rem))]" />
 
-      <p className="text-sm/6">
-        <Link href="/explore" className="hover:text-foreground">
+      <p className="text-sm/6 text-gray-100">
+        <Link href="/explore" className="hover:text-white">
           <strong className="font-semibold">USA Goals</strong>
           <svg
             viewBox="0 0 2 2"
@@ -52,7 +52,7 @@ export function SiteBanner() {
             viewBox="0 0 20 20"
             fill="currentColor"
             aria-hidden="true"
-            className="size-5 text-muted-foreground hover:text-foreground"
+            className="size-5 text-gray-400 hover:text-gray-300"
           >
             <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
           </svg>

@@ -10,7 +10,7 @@ export function Subheading({
   return (
     <h2
       className={cn(
-        "font-display text-[2rem]/10 text-pretty text-zinc-900 sm:text-5xl/14 dark:text-foreground",
+        "font-display text-[2rem]/10 tracking-tight text-pretty text-taupe-950 sm:text-5xl/14 dark:text-white",
         className,
       )}
       {...props}

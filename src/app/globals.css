@@ -4,31 +4,29 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  color-scheme: light;
-  --background: #efebe4;
-  --foreground: var(--color-zinc-950);
+  --background: oklch(0.96 0.002 17.2);
+  --foreground: oklch(0.147 0.004 49.3);
   --card: oklch(0.986 0.002 67.8);
-  --card-foreground: var(--color-zinc-950);
+  --card-foreground: oklch(0.147 0.004 49.3);
   --popover: oklch(0.986 0.002 67.8);
-  --popover-foreground: var(--color-zinc-950);
-  --primary: var(--color-zinc-950);
-  --primary-foreground: #fff;
-  --secondary: color-mix(in oklab, var(--color-yellow-800) 10%, transparent);
-  --secondary-foreground: var(--color-zinc-900);
+  --popover-foreground: oklch(0.147 0.004 49.3);
+  --primary: oklch(0.147 0.004 49.3);
+  --primary-foreground: oklch(0.986 0.002 67.8);
+  --secondary: oklch(0.922 0.005 34.3);
+  --secondary-foreground: oklch(0.214 0.009 43.1);
   --muted: oklch(0.922 0.005 34.3);
   --muted-foreground: oklch(0.438 0.017 39.3);
   --accent: oklch(0.922 0.005 34.3);
-  --accent-foreground: var(--color-zinc-900);
+  --accent-foreground: oklch(0.214 0.009 43.1);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.868 0.007 39.5);
   --input: oklch(0.868 0.007 39.5);
   --ring: oklch(0.547 0.021 43.1);
   --radius: 0.5rem;
-  --site-banner-height: 0px;
+  --site-banner-height: 44px;
 }
 
 .dark {
-  color-scheme: dark;
   --background: oklch(0.147 0.004 49.3);
   --foreground: oklch(0.986 0.002 67.8);
   --card: oklch(0.214 0.009 43.1);
@@ -65,9 +63,6 @@
   --color-taupe-800: oklch(0.268 0.011 36.5);
   --color-taupe-900: oklch(0.214 0.009 43.1);
   --color-taupe-950: oklch(0.147 0.004 49.3);
-  --color-agency-marquee: #fefdf8;
-  --color-artwork-marquee: #fefdf8;
-  --color-marquee: color-mix(in oklab, var(--color-yellow-900) 8%, transparent);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -103,7 +98,8 @@
   }
 
   body {
-    @apply min-h-screen bg-background font-sans text-foreground;
+    @apply min-h-screen font-sans text-foreground;
+    background: #18181b;
   }
 }
 

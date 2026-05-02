@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { Button } from "@/components/ui/button";
-
 const artworkExtensions = new Set([
   ".avif",
   ".gif",
@@ -29,10 +27,10 @@ export default async function HomePage() {
   const goalArtwork = await getGoalArtwork();
 
   return (
-    <main className="flex min-h-[calc(100dvh-var(--site-banner-height)-78px)] items-center justify-center bg-background px-[100px] py-12 text-foreground max-[1024px]:px-9 max-[440px]:px-4">
+    <main className="flex min-h-[calc(100dvh-var(--site-banner-height)-78px)] items-center justify-center bg-[#18181b] px-[100px] py-12 text-white max-[1024px]:px-9 max-[440px]:px-4">
       <section className="flex w-full max-w-[1440px] justify-center">
         <div className="flex w-full max-w-[75vw] flex-col items-center gap-10 text-center max-[800px]:max-w-none">
-          <h1 className="max-w-[1080px] font-serif text-[96px] font-medium leading-none text-foreground max-[768px]:text-[42px]">
+          <h1 className="max-w-[1080px] font-serif text-[96px] font-medium leading-none tracking-[-0.008em] max-[768px]:text-[42px]">
             Track<AgencyMarquee />the
              <span> Administration’s</span>
             <br />
@@ -40,22 +38,23 @@ export default async function HomePage() {
             <GoalMarquee artwork={goalArtwork} />
           </h1>
 
-          <p className="max-w-[640px] text-[18px] leading-7 text-muted-foreground max-[440px]:w-full">
+          <p className="max-w-[640px] text-[18px] leading-7 text-[#a8afb7] max-[440px]:w-full">
             Explore the strategic goals set by U.S. federal agencies. Find connections to your priorities. Change what government achieves for the American people.
           </p>
 
           <div className="flex flex-wrap justify-center gap-2 max-[440px]:w-full max-[440px]:flex-col">
-            <Button asChild size="lg" className="h-12 rounded-full px-7 max-[440px]:w-full">
-              <Link href="/explore">Discover</Link>
-            </Button>
-            <Button
-              asChild
-              variant="secondary"
-              size="lg"
-              className="h-12 rounded-full px-7 max-[440px]:w-full"
+            <Link
+              href="/explore"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-white px-7 text-sm font-medium text-[#18181b] transition-opacity hover:opacity-90 max-[440px]:w-full"
             >
-              <Link href="/explore?view=agencies#discovery">Learn more</Link>
-            </Button>
+              Discover
+            </Link>
+            <Link
+              href="/explore?view=agencies#discovery"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-[#343538] px-7 text-sm font-medium text-[#dadee4] transition-colors hover:bg-[#3f4043] max-[440px]:w-full"
+            >
+              Learn more
+            </Link>
           </div>
         </div>
       </section>
@@ -65,11 +64,7 @@ export default async function HomePage() {
 
 function AgencyMarquee() {
   return (
-    <InlineHeroMarquee
-      direction="reverse"
-      itemGap="gap-4"
-      backgroundClassName="bg-agency-marquee"
-    >
+    <InlineHeroMarquee direction="reverse" itemGap="gap-4">
       {agencySealMarqueeItems.map((item) => (
         <span
           key={item.id}
@@ -95,11 +90,7 @@ function GoalMarquee({
   artwork: Array<{ alt: string; id: string; src: string }>;
 }) {
   return (
-    <InlineHeroMarquee
-      direction="reverse"
-      itemGap="gap-4"
-      backgroundClassName="bg-artwork-marquee"
-    >
+    <InlineHeroMarquee direction="reverse" itemGap="gap-4">
       {artwork.map((item) => (
         <span
           key={item.id}
@@ -122,12 +113,10 @@ function InlineHeroMarquee({
   children,
   direction = "normal",
   itemGap = "gap-5",
-  backgroundClassName = "bg-marquee",
 }: {
   children: ReactNode;
   direction?: "normal" | "reverse";
   itemGap?: "gap-3" | "gap-4" | "gap-5";
-  backgroundClassName?: "bg-agency-marquee" | "bg-artwork-marquee" | "bg-marquee";
 }) {
   const animationClass =
     direction === "reverse"
@@ -139,7 +128,7 @@ function InlineHeroMarquee({
   return (
     <span
       aria-hidden="true"
-      className={`mx-2 inline-flex h-[74px] w-[200px] translate-y-[-8px] items-center overflow-hidden rounded-full border border-zinc-950 ${backgroundClassName} px-5 align-middle text-secondary-foreground max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-2px] max-[768px]:px-3`}
+      className="mx-2 inline-flex h-[74px] w-[200px] translate-y-[-8px] items-center overflow-hidden rounded-full bg-[#EDE7DD] px-5 align-middle text-[#18181b] max-[768px]:h-8 max-[768px]:w-[120px] max-[768px]:translate-y-[-2px] max-[768px]:px-3"
     >
       <span className={`flex min-w-max ${animationClass} items-center`}>
         <span className={`flex shrink-0 items-center ${itemGap} ${trailingGapClass}`}>
