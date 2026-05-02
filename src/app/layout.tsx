@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
-import { SiteBanner } from "@/components/site/site-banner";
 import { SiteHeader } from "@/components/site/site-header";
 
 import "./globals.css";
@@ -96,7 +95,6 @@ export default function RootLayout({
       className={`${neueMontreal.variable} ${copernicusNewCond.variable} ${copernicusNewCond130.variable}`}
     >
       <body>
-        <SiteBanner />
         <SiteHeader />
         {children}
       </body>
