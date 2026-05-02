@@ -9,17 +9,25 @@ import { ArrowLeft, Share2 } from "lucide-react";
 import { CatalogPreviewModeButton } from "@/components/site/catalog-preview-mode-button";
 import { DownloadDataButton } from "@/components/site/download-data-button";
 import { ExploreHeaderSearch } from "@/components/site/explore-header-search";
+import { ThemeToggleButton } from "@/components/site/theme-toggle-button";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   if (pathname.startsWith("/goals/")) {
     return <GoalHeader />;
   }
 
   return (
-    <header className="sticky top-0 z-50 h-[78px] bg-[#18181b]">
+    <header
+      className={cn(
+        "sticky top-0 z-50 h-[78px] bg-background text-foreground",
+        !isHomePage && "dark",
+      )}
+    >
       <div className="relative flex h-full items-center px-6 max-[440px]:px-4">
         <Link
           href="/"
@@ -32,7 +40,7 @@ export function SiteHeader() {
             width={56}
             height={28}
             priority
-            className="h-auto w-14 invert"
+            className={cn("h-auto w-14", isHomePage ? "dark:invert" : "invert")}
           />
         </Link>
 
@@ -40,8 +48,13 @@ export function SiteHeader() {
           <ExploreHeaderSearch />
         </Suspense>
 
-        <div className="ml-auto">
-          {pathname === "/" ? <DownloadDataButton /> : null}
+        <div className="ml-auto flex items-center gap-2">
+          {isHomePage ? (
+            <>
+              <DownloadDataButton />
+              <ThemeToggleButton />
+            </>
+          ) : null}
           <Suspense fallback={null}>
             <CatalogPreviewModeButton />
           </Suspense>
